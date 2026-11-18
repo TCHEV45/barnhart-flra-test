@@ -12917,8 +12917,9 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
 /******/ ])["default"];
 });</script>
 <script>
-const TESTAPP=true;const BUILD='3.32';
+const TESTAPP=true;const BUILD='3.33';
 const NOTES=[
+['3.33',['Renamed in the menu: Suncor is now “Suncor Mobile Crane SWP” and Crane moves is now “Barnhart On Site Crane Movement FLRA”'],1],
 ['3.32',['Menu button (☰) at the top left of the home screen replaces the row of tabs: FLRAs, Lift calcs only, Suncor, Crane moves','New: Site maps, starting with Cenovus Christina Lake South – add pictures of the site maps and open them with no signal, with zoom'],1],
 ['3.31',['Suncor FLRA is now in the main app: lift plan, pre-lift briefing checklist, crane lift FLRA and Appendix J movement checklist – fill in, sign, then save a PDF or a gallery picture on the paper pages','Barnhart On Site Crane Movement FLRA (HSE004D) is now in the main app, with its own list, sign-off and paper copy']],
 ['3.30',['Pull down on the home screen to check for updates – if there is a newer build it loads it, and your saved FLRAs stay on the device','“Check for updates” button added under what\'s new']],
@@ -13824,16 +13825,16 @@ const MOVR=[
  {p:'sB',h:'Area for Company Use Only for Review Purposes',roles:['Supervisor','HSE Advisor','Branch/Site Manager'],dt:1}];
 /* registry of schema-driven form types */
 const XF={
- syn:{on:SYNON,tab:'Suncor',tabs:SYNT,S:SYN,R:SYNR,sign:'ssign',back:'‹ Suncor',newLab:'＋ New Suncor FLRA',
+ syn:{on:SYNON,tab:'Suncor Mobile Crane SWP',tabs:SYNT,S:SYN,R:SYNR,sign:'ssign',back:'‹ Suncor SWP',newLab:'＋ New Suncor Mobile Crane SWP',
   intro:'Suncor FLRA: Appendix A lift plan, pre-lift briefing checklist, crane lift FLRA, crane movement checklist and sign-offs in one. PDF and picture copies come out on the paper forms.',
-  empty:'No Suncor FLRAs saved yet. Tap New Suncor FLRA to start.',
+  empty:'None saved yet. Tap New Suncor Mobile Crane SWP to start.',
   lab:v=>[v.liftLocation||v.fPlant,v.unit||v.mUnit,String(v.liftDesc||v.groupDesc||'').slice(0,40)].filter(Boolean).join(' · ')||'Untitled Suncor FLRA',
   keys:/^(liftLocation|unit|liftDesc|groupDesc|fPlant|mUnit)$/,
   newV:()=>{const d=today();return {date:d,fDate:d,mDate:d,rev:16,haz:[{task:'Pre use Inspection',items:[{}]}]}},
   pct:v=>synCalc(v).util,banner:'IF CONDITIONS OR SCOPE OF WORK CHANGE, STOP AND UPDATE THE FLRA WITH ALL PARTIES INVOLVED IN THE TASK.',
   dup:v=>{v.fDate=v.mDate=v.date;delete v.fNoDetails;delete v.fReeval;delete v.fAudited},
   H:792,render:synRender,bg:()=>SYNBG.slice(0,4),file:v=>[v.fDate||v.date,v.mUnit||v.unit,v.liftLocation||v.fPlant,'Suncor FLRA']},
- mov:{on:SYNON,tab:'Crane moves',tabs:MOVT,S:MOV,R:MOVR,sign:'vsign',back:'‹ Crane moves',newLab:'＋ New crane movement FLRA',
+ mov:{on:SYNON,tab:'Barnhart On Site Crane Movement FLRA',tabs:MOVT,S:MOV,R:MOVR,sign:'vsign',back:'‹ Crane movement',newLab:'＋ New crane movement FLRA',
   intro:'Barnhart On Site Crane Movement FLRA (HSE004D). PDF and picture copies come out on the paper form.',
   empty:'No crane movement FLRAs saved yet. Tap New crane movement FLRA to start.',
   lab:v=>[[v.mvFrom,v.mvTo].filter(Boolean).join(' to '),v.mvUnit].filter(Boolean).join(' · ')||'Untitled crane movement',
