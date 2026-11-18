@@ -99,8 +99,11 @@ table.ramt td,table.ramt th{border:1px solid #fff;padding:8px 2px}
 </style>
 </head>
 <body>
-<header><button id="homeBtn" class="hide">‹ FLRAs</button><h1 id="title">Barnhart Crane Lift FLRA</h1><button id="pdfTop" class="hide">PDF</button></header>
+<header><button id="menuBtn" aria-label="Menu" style="font-size:24px;line-height:1;padding:4px 10px">☰</button><button id="homeBtn" class="hide">‹ FLRAs</button><h1 id="title">Barnhart Crane Lift FLRA</h1><button id="pdfTop" class="hide">PDF</button></header>
 <nav class="tabs hide" id="tabs"></nav>
+<div id="menu" class="hide" style="position:fixed;inset:0;z-index:22;background:rgba(0,0,0,.5)"><div id="menuBox" style="position:absolute;left:0;top:0;bottom:0;width:min(300px,84vw);background:#fff;overflow:auto;padding:calc(12px + env(safe-area-inset-top)) 0 20px;box-shadow:2px 0 12px rgba(0,0,0,.3)"></div></div>
+<div id="mapv" class="modal hide" style="z-index:26;padding:0;background:#111;display:block"><div style="position:absolute;left:0;right:0;top:0;z-index:2;display:flex;gap:6px;align-items:center;padding:calc(6px + env(safe-area-inset-top)) 8px 6px;background:rgba(0,0,0,.75);color:#fff"><button type="button" class="btn sec" id="mvX" style="padding:8px 12px">‹ Back</button><b id="mvT" style="flex:1;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></b><button type="button" class="btn sec" id="mvOut" style="padding:8px 14px">−</button><button type="button" class="btn sec" id="mvFit" style="padding:8px 10px">Fit</button><button type="button" class="btn sec" id="mvIn" style="padding:8px 14px">+</button></div><div id="mvS" style="position:absolute;inset:0;overflow:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y;padding-top:calc(54px + env(safe-area-inset-top))"><img id="mvI" alt="" style="display:block;max-width:none"></div></div>
+<input type="file" id="mapFile" accept="image/*" multiple class="hide">
 <div id="ptr" aria-live="polite"><span></span></div>
 <main id="main"></main>
 <div class="modal hide" id="cfgm" style="z-index:25"><div class="box" style="max-height:92vh;overflow:auto"><b>Save crane configuration</b>
@@ -12914,8 +12917,9 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
 /******/ ])["default"];
 });</script>
 <script>
-const TESTAPP=true;const BUILD='3.31';
+const TESTAPP=true;const BUILD='3.32';
 const NOTES=[
+['3.32',['Menu button (☰) at the top left of the home screen replaces the row of tabs: FLRAs, Lift calcs only, Suncor, Crane moves','New: Site maps, starting with Cenovus Christina Lake South – add pictures of the site maps and open them with no signal, with zoom'],1],
 ['3.31',['Suncor FLRA is now in the main app: lift plan, pre-lift briefing checklist, crane lift FLRA and Appendix J movement checklist – fill in, sign, then save a PDF or a gallery picture on the paper pages','Barnhart On Site Crane Movement FLRA (HSE004D) is now in the main app, with its own list, sign-off and paper copy']],
 ['3.30',['Pull down on the home screen to check for updates – if there is a newer build it loads it, and your saved FLRAs stay on the device','“Check for updates” button added under what\'s new']],
 ['3.29',['The Syncrude form is now called Suncor in the app','New form: Barnhart On Site Crane Movement FLRA (HSE004D) with its own list, sign-off and paper copy'],1],
@@ -13283,12 +13287,13 @@ function clrPage(){const v=cur.v,T=SH(),m=$('#main'),del=(o,re)=>Object.keys(o).
 function open(f){cur=f;si=0;view='form';tab=isSyn(f)?XF[f.t].tabs[0][0]:isCalc(f)?'crane':'job';ci=1;render();scrollTo(0,0)}
 function render(keep){
   const m=$('#main'),sy=scrollY,home=view==='home';
-  $('#homeBtn').classList.toggle('hide',home);$('#pdfTop').classList.toggle('hide',home);$('#tabs').classList.toggle('hide',home);
+  $('#homeBtn').classList.toggle('hide',home);$('#menuBtn').classList.toggle('hide',!home);$('#pdfTop').classList.toggle('hide',home);$('#tabs').classList.toggle('hide',home);
   if(view==='shared'){sharedView(m);return}
   if(home){
     $('#title').textContent=QTITLE;
+    if(homeTab==='maps'){mapsHome(m);return}
     if(XF[homeTab]&&!XF[homeTab].on)homeTab='flra';const nF=list.filter(x=>recKind(x)==='flra').length,nC=list.filter(isCalc).length,hc=homeTab==='calc',hx=XF[homeTab],shown=list.filter(x=>recKind(x)===homeTab);
-    m.innerHTML=`<div style="text-align:right;margin:-4px 2px 6px"><button type="button" id="buildNo" style="border:0;background:none;padding:6px 0 6px 12px;font-size:13px;color:var(--mut);font-family:inherit">${TESTAPP?'Test build ':'Build '}${BUILD} · <u style="color:var(--acc)">what's new</u></button></div>${TESTAPP?'<div class="banner red">TEST VERSION – for trying changes before they go to the main app. Do not use it for real FLRAs. Anything saved here stays in this test app only.</div>':''}<div class="seg" id="hseg"><button type="button" data-h="flra" class="${hc||hx?'':'on'}">FLRAs (${nF})</button><button type="button" data-h="calc" class="${hc?'on':''}">Lift calcs only (${nC})</button>${Object.keys(XF).filter(k=>XF[k].on).map(k=>`<button type="button" data-h="${k}" class="${homeTab===k?'on':''}">${XF[k].tab} (${list.filter(x=>x.t===k).length})</button>`).join('')}</div>
+    m.innerHTML=`<div style="text-align:right;margin:-4px 2px 6px"><button type="button" id="buildNo" style="border:0;background:none;padding:6px 0 6px 12px;font-size:13px;color:var(--mut);font-family:inherit">${TESTAPP?'Test build ':'Build '}${BUILD} · <u style="color:var(--acc)">what's new</u></button></div>${TESTAPP?'<div class="banner red">TEST VERSION – for trying changes before they go to the main app. Do not use it for real FLRAs. Anything saved here stays in this test app only.</div>':''}<h2 id="secT" style="margin:2px 2px 8px;font-size:19px">${hx?esc(hx.tab):hc?'Lift calcs only':'FLRAs'} <span style="font-weight:400;color:var(--mut);font-size:14px">(${shown.length})</span></h2>
     <button class="btn wide" id="newBtn">${hx?hx.newLab:hc?'＋ New lift calc':'＋ New FLRA'}</button>
     <button class="btn sec wide" id="scanBtn">▦ Scan a QR code to add one from another device</button>
     ${hx?`<p class="note">${hx.intro}</p>`:''}${shown.length?'':`<p class="note">${hx?hx.empty:hc?'No lift calcs saved yet. A lift calc is just the Crane details and Lift calculation, without the rest of the FLRA. ':'No FLRAs saved yet. Tap New FLRA to start.'}</p>`}
@@ -13305,7 +13310,7 @@ function render(keep){
     appQR();
     $('#caBtn').onclick=sendAll;
     $('#scanBtn').onclick=startScan;
-    m.querySelectorAll('#hseg button').forEach(b=>b.onclick=()=>{homeTab=b.dataset.h;render()});
+    
     $('#newBtn').onclick=()=>{const f=XF[homeTab]?synNew(homeTab):{id:'L'+Date.now(),updated:Date.now(),v:{date:today(),units:'lbs',rev:16}};if(homeTab==='calc')f.t='calc';list.push(f);saveList();open(f)};
     m.querySelectorAll('[data-open]').forEach(e=>e.onclick=()=>open(list.find(x=>x.id===e.dataset.open)));
     m.querySelectorAll('[data-pdf]').forEach(e=>e.onclick=()=>exportAsk(list.find(x=>x.id===e.dataset.pdf)));
@@ -14195,7 +14200,7 @@ function checkShare(){const m=/[#&]f=([\w\-]+)/.exec(location.hash);
   try{const r0=decodeShare(m[1]);if(r0.all){importAll(r0.all);return}shared=r0;view='shared';render();scrollTo(0,0)}
   catch(e){alert('Could not read the FLRA in that link. Try scanning the QR code again.')}
   try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}}
-function sharedView(m){['#homeBtn','#pdfTop','#tabs'].forEach(s=>$(s).classList.add('hide'));const v=shared.v;$('#title').textContent=QTITLE;
+function sharedView(m){['#homeBtn','#pdfTop','#tabs','#menuBtn'].forEach(s=>$(s).classList.add('hide'));const v=shared.v;$('#title').textContent=QTITLE;
   m.innerHTML=`<div class="card"><h2>Copy received from QR code</h2><div class="qt"><b>${esc(isSyn(shared)?synLab(shared):(v.job||v.c1_make||'Untitled'))}</b><br>${esc(v.date||'')}${v.loc?' · '+esc(v.loc):''}${v.prep?'<br>Prepared by '+esc(v.prep):''}</div>
   <button class="btn wide" id="shPdf">⬇ Save / Share PDF</button><button class="btn sec wide" id="shAdd">Add to this device and open</button><button class="btn sec wide" id="shX">Close</button>
   <p class="note">The details travelled inside the QR code itself – nothing was uploaded. Nothing is kept on this device unless you save the PDF or add it.</p></div>`;
@@ -14207,10 +14212,51 @@ addEventListener('hashchange',checkShare);
 document.addEventListener('click',e=>{const t=e.target;if(t.closest&&t.closest('#buildNo'))showNotes();else if(t.closest&&t.closest('#bnX'))$('#bnm').classList.add('hide');else if(t.closest&&t.closest('#bnUp')){$('#bnm').classList.add('hide');checkUpdate()}});
 function appQR(){const c=$('#appqr');if(!c)return;const u=location.origin+location.pathname.replace(/index\.html$/,'');$('#appurl').textContent=u.replace(/^https?:\/\//,'');try{const q=qrMake(u),n=q.getModuleCount(),x=c.getContext('2d'),m=3,z=Math.floor(c.width/(n+2*m)),o=Math.floor((c.width-z*n)/2);x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.fillStyle='#000';for(let r=0;r<n;r++)for(let k=0;k<n;k++)if(q.isDark(r,k))x.fillRect(o+k*z,o+r*z,z,z)}catch(e){c.style.display='none'}}
 
+/* ---------- menu (top left) ---------- */
+function secList(){return [['flra','FLRAs',list.filter(x=>recKind(x)==='flra').length],['calc','Lift calcs only',list.filter(isCalc).length]].concat(Object.keys(XF).filter(k=>XF[k].on).map(k=>[k,XF[k].tab,list.filter(x=>x.t===k).length]))}
+function goSec(k){homeTab=k;view='home';$('#menu').classList.add('hide');render();scrollTo(0,0)}
+function openMenu(){const row=(k,l,n,on)=>`<button type="button" data-h="${k}" style="display:flex;width:100%;gap:8px;align-items:center;border:0;border-left:5px solid ${on?'var(--acc)':'transparent'};background:${on?'#f4f4f5':'#fff'};padding:15px 16px;font:inherit;font-size:17px;font-weight:${on?700:500};color:var(--ink);text-align:left"><span style="flex:1">${l}</span><span style="color:var(--mut);font-size:14px">${n}</span></button>`;
+  $('#menuBox').innerHTML=`<div style="padding:4px 16px 10px;font-weight:700;color:var(--acc)">${esc(QTITLE)}</div><div class="lab" style="padding:8px 16px 2px">Forms</div>${secList().map(a=>row(a[0],esc(a[1]),a[2],homeTab===a[0])).join('')}<div class="lab" style="padding:14px 16px 2px;border-top:1px solid var(--line);margin-top:8px">Site</div>${row('maps','Site maps','',homeTab==='maps')}`;
+  $('#menuBox').querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>goSec(b.dataset.h));$('#menu').classList.remove('hide')}
+$('#menuBtn').onclick=openMenu;$('#menu').onclick=e=>{if(e.target.id==='menu')$('#menu').classList.add('hide')};
+/* ---------- site maps: pictures kept on this device ---------- */
+const SITEK='flra.sites.v1',SITE0=['Cenovus Christina Lake South'];let mapSite=null,mapDbP=null,mapUrl=null,mapZ=1,mapFitZ=1;
+function sitesLoad(){try{const a=JSON.parse(localStorage.getItem(SITEK));if(Array.isArray(a)&&a.length)return a}catch(e){}return SITE0.slice()}
+function sitesSave(a){try{localStorage.setItem(SITEK,JSON.stringify(a))}catch(e){}}
+function mapDb(){return mapDbP||(mapDbP=new Promise((ok,no)=>{const r=indexedDB.open('flra.maps',1);r.onupgradeneeded=()=>r.result.createObjectStore('maps',{keyPath:'id'});r.onsuccess=()=>ok(r.result);r.onerror=()=>{mapDbP=null;no(r.error)}}))}
+function mapTx(mode,fn){return mapDb().then(db=>new Promise((ok,no)=>{const t=db.transaction('maps',mode),q=fn(t.objectStore('maps'));t.oncomplete=()=>ok(q&&q.result);t.onerror=t.onabort=()=>no(t.error)}))}
+const mapAll=()=>mapTx('readonly',s=>s.getAll()).catch(()=>null);
+async function mapsHome(m){const all=await mapAll();if(view!=='home'||homeTab!=='maps')return;const sites=sitesLoad();
+  const head=`<div style="text-align:right;margin:-4px 2px 6px"><button type="button" id="buildNo" style="border:0;background:none;padding:6px 0 6px 12px;font-size:13px;color:var(--mut);font-family:inherit">${TESTAPP?'Test build ':'Build '}${BUILD} · <u style="color:var(--acc)">what's new</u></button></div>`;
+  if(all===null){m.innerHTML=head+'<p class="note">Site maps cannot be stored in this browser (private browsing or storage is blocked).</p>';return}
+  if(mapSite&&sites.includes(mapSite)){const mine=all.filter(x=>x.site===mapSite).sort((a,b)=>a.added-b.added);
+    m.innerHTML=head+`<button type="button" class="btn sec" id="msBack" style="margin-bottom:8px">‹ Site maps</button><h2 style="margin:2px 2px 8px;font-size:19px">${esc(mapSite)}</h2><button class="btn wide" id="mapAdd">＋ Add a map picture</button>${mine.length?'':'<p class="note">No maps added for this site yet. Add a photo, screenshot or saved picture of the site map – it is kept on this device and opens with no signal.</p>'}${mine.map(x=>`<div class="card item"><div class="meta"><b>${esc(x.name)}</b><small>${(x.size/1048576).toFixed(1)} MB</small></div><button data-mopen="${x.id}">Open</button><button data-mren="${x.id}">Rename</button><button class="del" data-mdel="${x.id}" aria-label="Delete">✕</button></div>`).join('')}<p class="note">Maps stay on this device only – they are too big for the QR copy, so add them on each device. Pinch or use + / − to zoom.</p>`;
+    $('#msBack').onclick=()=>{mapSite=null;render()};$('#mapAdd').onclick=()=>{$('#mapFile').value='';$('#mapFile').click()};
+    m.querySelectorAll('[data-mopen]').forEach(e=>e.onclick=()=>mapOpen(mine.find(x=>x.id===e.dataset.mopen)));
+    m.querySelectorAll('[data-mren]').forEach(e=>e.onclick=async()=>{const x=mine.find(y=>y.id===e.dataset.mren),n=prompt('Name for this map',x.name);if(n&&n.trim()){x.name=n.trim().slice(0,60);await mapTx('readwrite',s=>s.put(x));render()}});
+    m.querySelectorAll('[data-mdel]').forEach(e=>e.onclick=async()=>{if(confirm('Delete this map from this device?')){await mapTx('readwrite',s=>s.delete(e.dataset.mdel));render()}});return}
+  mapSite=null;
+  m.innerHTML=head+`<h2 style="margin:2px 2px 8px;font-size:19px">Site maps</h2>${sites.map((n,i)=>{const c=all.filter(x=>x.site===n).length;return `<div class="card item"><div class="meta"><b>${esc(n)}</b><small>${c?c+(c===1?' map':' maps'):'No maps added yet'}</small></div><button data-site="${i}">Open</button><button class="del" data-sdel="${i}" aria-label="Remove site">✕</button></div>`}).join('')}<button class="btn sec wide" id="siteAdd">＋ Add a site</button><p class="note">Keep site maps on your phone or tablet so they open with no signal. Pick a site, then add pictures of its maps.</p>`;
+  m.querySelectorAll('[data-site]').forEach(e=>e.onclick=()=>{mapSite=sites[+e.dataset.site];render();scrollTo(0,0)});
+  m.querySelectorAll('[data-sdel]').forEach(e=>e.onclick=async()=>{const n=sites[+e.dataset.sdel],mine=all.filter(x=>x.site===n);if(confirm('Remove “'+n+'”'+(mine.length?' and its '+mine.length+' map'+(mine.length>1?'s':''):'')+' from this device?')){for(const x of mine)await mapTx('readwrite',s=>s.delete(x.id));sitesSave(sites.filter(x=>x!==n));render()}});
+  $('#siteAdd').onclick=()=>{const n=(prompt('Site name')||'').trim().slice(0,60);if(n&&!sites.includes(n)){sites.push(n);sitesSave(sites)}if(n){mapSite=n;render()}}}
+$('#mapFile').onchange=async e=>{const fs=[...e.target.files].filter(f=>/^image\//.test(f.type));if(!fs.length||!mapSite)return;let bad=0;
+  for(const f of fs){if(f.size>40*1048576){bad++;continue}try{const buf=await f.arrayBuffer();await mapTx('readwrite',s=>s.put({id:'M'+Date.now()+Math.random().toString(36).slice(2,6),site:mapSite,name:(f.name||'Map').replace(/\.[a-z0-9]+$/i,'').slice(0,60)||'Map',buf,type:f.type,size:f.size,added:Date.now()}))}catch(x){bad++}}
+  if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
+  toast(bad?bad+' could not be saved (too big or storage is full)':fs.length>1?fs.length+' maps added':'Map added',2600);render()};
+function mapZoom(z,cx,cy){const S=$('#mvS'),I=$('#mvI');z=Math.max(mapFitZ*.5,Math.min(mapFitZ*12,z));if(cx==null){cx=S.clientWidth/2;cy=S.clientHeight/2}const px=(S.scrollLeft+cx)/mapZ,py=(S.scrollTop+cy)/mapZ;mapZ=z;I.style.width=I.naturalWidth*z+'px';S.scrollLeft=px*z-cx;S.scrollTop=py*z-cy}
+function mapOpen(x){if(!x)return;if(mapUrl)URL.revokeObjectURL(mapUrl);mapUrl=URL.createObjectURL(new Blob([x.buf],{type:x.type}));const I=$('#mvI');$('#mvT').textContent=x.name;I.onload=()=>{mapFitZ=Math.min(1,$('#mvS').clientWidth/I.naturalWidth);mapZ=mapFitZ;I.style.width=I.naturalWidth*mapZ+'px';$('#mvS').scrollTo(0,0)};I.src=mapUrl;$('#mapv').classList.remove('hide')}
+$('#mvX').onclick=()=>{$('#mapv').classList.add('hide');$('#mvI').removeAttribute('src');if(mapUrl){URL.revokeObjectURL(mapUrl);mapUrl=null}};
+$('#mvIn').onclick=()=>mapZoom(mapZ*1.5);$('#mvOut').onclick=()=>mapZoom(mapZ/1.5);$('#mvFit').onclick=()=>{mapZoom(mapFitZ);$('#mvS').scrollTo(0,0)};
+{let d0=0,z0=1;const S=$('#mvS'),dist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
+ S.addEventListener('touchstart',e=>{if(e.touches.length===2){d0=dist(e.touches);z0=mapZ}},{passive:true});
+ S.addEventListener('touchmove',e=>{if(e.touches.length===2&&d0){e.preventDefault();const r=S.getBoundingClientRect();mapZoom(z0*dist(e.touches)/d0,(e.touches[0].clientX+e.touches[1].clientX)/2-r.left,(e.touches[0].clientY+e.touches[1].clientY)/2-r.top)}},{passive:false});
+ S.addEventListener('touchend',e=>{if(e.touches.length<2)d0=0},{passive:true})}
+
 /* ---------- pull down on the home screen to check for an update ---------- */
 const PTR={y0:null,d:0,busy:0},BN=()=>(TESTAPP?'Test build ':'Build ');
 function ptrSet(h,t){const e=$('#ptr');e.style.height=h+'px';if(t!=null)e.firstChild.textContent=t}
-function ptrOK(){return view==='home'&&!PTR.busy&&scrollY<=0&&!document.querySelector('.modal:not(.hide)')}
+function ptrOK(){return view==='home'&&!PTR.busy&&scrollY<=0&&!document.querySelector('.modal:not(.hide)')&&$('#menu').classList.contains('hide')}
 addEventListener('touchstart',e=>{PTR.y0=(e.touches.length===1&&ptrOK())?e.touches[0].clientY:null;PTR.d=0;if(PTR.y0!=null)$('#ptr').classList.remove('go')},{passive:true});
 addEventListener('touchmove',e=>{if(PTR.y0==null)return;if(e.touches.length!==1||scrollY>0||!ptrOK()){PTR.y0=null;PTR.d=0;ptrSet(0);return}
   const d=Math.max(0,Math.min(110,(e.touches[0].clientY-PTR.y0)*.5));PTR.d=d;ptrSet(d,d>=60?'Release to check for updates':'Pull down to check for updates')},{passive:true});
