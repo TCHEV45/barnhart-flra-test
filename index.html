@@ -12917,8 +12917,9 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
 /******/ ])["default"];
 });</script>
 <script>
-const TESTAPP=true;const BUILD='3.38';
+const TESTAPP=true;const BUILD='3.39';
 const NOTES=[
+['3.39',['Crane library now works on the Suncor Mobile Crane SWP: pick the crane under Crane Make/Capacity, then pick counterweight, hook block, ball, boom length, jib weight and parts of line','Suncor SWP: Unit and Crane Make now carry over to the Movement checklist (Unit # and Size) unless you have typed something different there','Barnhart On Site Crane Movement FLRA: crane library pick fills Crane Size','FLRA Overlap step 4: one tap fills a line with this FLRA’s crane make, unit # and operator'],1],
 ['3.38',['Crane library: added Liebherr LTM 1045-3.1, 1070-4.1, 1100-4.1 and 1160-5.1 (counterweights, hook blocks, boom lengths and jib weights read from the scanned chart books)'],1],
 ['3.37',['Crane library: boom length pick-lists added for the LTM 1110-5.1, 1400-7.1, 1500-8.1 and 11200-9.1'],1],
 ['3.36',['Crane library: added Liebherr LTM 11200-9.1','Parts-of-line pick-lists added for the LTM 1100-4.2, 1130-5.1, 1250-5.1 and 1400-7.1; counterweights added for the LTM 1500-8.1','LTM 1250-5.1 line pull uses the chart book ASME B30.5 column (Canada/USA), listed up to 13 parts'],1],
@@ -13259,6 +13260,7 @@ ov:()=>`<div class="card"><h2>Overlapping equipment</h2>${seg('ov','Overlapping 
   ${cur.v.ov==='Yes'?`${chkb(...OV[0])}${chkb(...OV[1])}
   ${seg('ov3','Step 3: Determine if all cranes/equipment (involved) can be relocated to avoid swing radius? (If NO, go to Step #4)',YN)}
   <div class="lab">Step 4: Identify the cranes/equipment with overlapping working radius (make, unit #, operator's name)</div>
+  ${(()=>{try{const T=SH(),slot=[1,2,3,4,5,6].find(i=>!cur.v['ove'+i]);if(!slot)return '';const o=[1,2].map(c=>[T['c'+c+'_make'],T['c'+c+'_unit'],T['c'+c+'_op']]).filter(a=>a[0]||a[1]).map(a=>{const t=[a[0],a[1]?'Unit '+a[1]:'',a[2]].filter(Boolean).join(', '),r={};r['ove'+slot]=t;return [t,r]});return o.length?pickSel(o,'Fill line '+slot+' from this FLRA\'s crane'):''}catch(e){return ''}})()}
   ${[1,2,3,4,5,6].map(i=>`<input type="text" style="margin:3px 0" data-k="ove${i}" value="${val('ove'+i)}" placeholder="${i}" aria-label="Overlapping crane or equipment ${i}" autocomplete="off">`).join('')}
   ${chkb(...OV[2])}
   ${seg('ov6','Step 6: Has a collision avoidance plan been established? (Yes – go to Step #7 · No – go to Step #2)',YN)}
@@ -13468,8 +13470,9 @@ function render(keep){
   if($('#addCalc'))$('#addCalc').onclick=()=>{if(NC(SH())>=30)return;SH().nc=NC(SH())+1;ci=SH().nc;touch();render();scrollTo(0,0)};
   if($('#rmCalc'))$('#rmCalc').onclick=()=>{const N=NC(SH());if(!confirm('Remove Calc #'+N+' and its numbers?'))return;Object.keys(SH()).forEach(k=>{if(k.indexOf('k'+N+'_')===0)delete SH()[k]});SH().nc=N-1;ci=N-1;touch();render();scrollTo(0,0)};
   m.querySelectorAll('[data-cpick]').forEach(e=>e.onchange=()=>{if(!e.value)return;const o=JSON.parse(e.value);for(const k in o){const T=dvk(k);T[k]=o[k];if(/^k\d+_boom$/.test(k))autoAng(T,parseInt(k.slice(1),10))}touch();render(true)});
+  m.querySelectorAll('[data-slib]').forEach(e=>e.onchange=()=>{const K=e.dataset.slib,old=sLibOf(),x=CRLIB.find(y=>y.id===e.value),was=cur.v[K];cur.v.sLib=e.value;if(x&&(!was||(old&&was===old.name))){cur.v[K]=x.name;if(K==='craneMake'&&(!cur.v.mSize||cur.v.mSize===was))cur.v.mSize=x.name}touch();render(true)});
   m.querySelectorAll('[data-lib]').forEach(e=>e.onchange=()=>{const c=e.dataset.lib,T=SH(),old=libOf(T,c),x=CRLIB.find(y=>y.id===e.value);T['c'+c+'_lib']=e.value;if(x&&(!T['c'+c+'_make']||(old&&T['c'+c+'_make']===old.name)))T['c'+c+'_make']=x.name;touch();render(true)});
-  m.querySelectorAll('[data-k]').forEach(e=>e.oninput=()=>{const K=e.dataset.k,T=dvk(K);T[K]=e.value;if(/^k\d+_ang$/.test(K))T[K+'Auto']='';if(/^k\d+_(boom|r0|r1|ang)$/.test(K))autoAng(T,parseInt(K.slice(1),10));touch();if(K==='job'&&!isSyn(cur))$('#title').textContent=e.value||(isCalc(cur)?'New lift calc':'New FLRA');if(isSyn(cur)){if(tab==='slift')synRefresh();if(XF[cur.t].keys.test(K))$('#title').textContent=synLab(cur)}if(tab==='calc')refresh()});
+  m.querySelectorAll('[data-k]').forEach(e=>e.oninput=()=>{const K=e.dataset.k,T=dvk(K),O=T[K]||'';T[K]=e.value;if(isSyn(cur)){const M={unit:'mUnit',craneMake:'mSize'}[K];if(M&&(!cur.v[M]||cur.v[M]===O))cur.v[M]=e.value}if(/^k\d+_ang$/.test(K))T[K+'Auto']='';if(/^k\d+_(boom|r0|r1|ang)$/.test(K))autoAng(T,parseInt(K.slice(1),10));touch();if(K==='job'&&!isSyn(cur))$('#title').textContent=e.value||(isCalc(cur)?'New lift calc':'New FLRA');if(isSyn(cur)){if(tab==='slift')synRefresh();if(XF[cur.t].keys.test(K))$('#title').textContent=synLab(cur)}if(tab==='calc')refresh()});
   m.querySelectorAll('[data-seg]').forEach(s=>s.querySelectorAll('button').forEach(b=>b.onclick=()=>{const k=s.dataset.seg,T=dvk(k);T[k]=(T[k]===b.dataset.v&&k!=='units'&&!/cwtU$/.test(k))?'':b.dataset.v;touch();if(/^k\d+_cr$/.test(k)&&!T[k])T[k]=b.dataset.v;if(/^(two|units|ov|q\d+|k\d+_cr)$/.test(k))render(true);else s.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.v===T[k]))}));
   m.querySelectorAll('[data-chk]').forEach(b=>b.onclick=()=>{const k=b.dataset.chk;cur.v[k]=cur.v[k]==='1'?'':'1';touch();render(true)});
   m.querySelectorAll('[data-arr]').forEach(e=>{const h=()=>{const a=cur.v[e.dataset.arr],i=+e.dataset.i;if(e.dataset.j!=null)a[i].items[+e.dataset.j][e.dataset.f]=e.value;else (a[i]||(a[i]={}))[e.dataset.f]=e.value;if(e.tagName==='SELECT')e.className='ram '+(e.value?'r'+RAMC[e.value]:'');touch()};e.oninput=h;e.onchange=h});
@@ -13866,7 +13869,27 @@ function synPct(p){if(!isFinite(p))return ['','Enter the weights and chart capac
 function synRefresh(){const r=synCalc(cur.v),set=(id,t)=>{const e=$('#'+id);if(e)e.textContent=t};
   set('synFact',isFinite(r.fact)?fmt(r.fact)+' lbs':'—');set('synTot',isFinite(r.total)?fmt(r.total)+' lbs':'—');set('synLine',isFinite(r.line)?fmt(r.line)+' lbs':'—');
   const p=$('#synPct');if(p){const c=synPct(r.util);p.className='pct '+c[0];set('synPctV',isFinite(r.util)?fmt(r.util,1)+' %':'—');set('synPctN',c[1])}}
-function synF(f,yna){
+/* ---------- crane library picks on the schema forms (Suncor SWP, crane movement) ---------- */
+const sLibOf=()=>cur&&cur.v&&CRLIB.find(x=>x.id===cur.v.sLib)||null;
+function synPick(k){try{
+  if(!CRLIB.length||!cur||!isSyn(cur))return '';
+  const L=sLibOf(),o=(kk,v)=>{const r={};r[kk]=v;return r};
+  if(k==='craneMake'||k==='mvSize')return `<div class="lab">Crane library</div><select data-slib="${k}" aria-label="Crane library"><option value="">— not from library (type everything in) —</option>${CRLIB.map(x=>`<option value="${x.id}"${L&&L.id===x.id?' selected':''}>${esc(x.name)}</option>`).join('')}</select>${L?'<p class="note" style="margin:4px 0 0">Pick-lists on this form come from this crane\'s chart book. You can still type your own numbers. Chart capacity is always read off the chart by you.</p>':''}`;
+  if(!L)return '';
+  if(k==='cwtAmt'&&L.cwt.length)return pickSel(L.cwt.map(w=>[fmt(w[1])+' lbs ('+w[0]+' t)',o('cwtAmt',String(w[1]))]),'Pick counterweight');
+  if(k==='mainBlock'){const a=L.blocks.filter(b=>b[3]);return a.length?pickSel([].concat(...a.map(b=>[[b[0]+' t · '+shv(b)+' · '+fmt(b[2])+' lbs',o('mainBlock',String(b[2]))]].concat(b[5]?[[b[0]+' t · '+shv(b)+' + added weight · '+fmt(b[5])+' lbs',o('mainBlock',String(b[5]))]]:[]))),'Pick hook block'):''}
+  if(k==='auxBlock'){const a=L.blocks.filter(b=>!b[3]);return a.length?pickSel(a.map(b=>[b[0]+' t · single line hook · '+fmt(b[2])+' lbs',o('auxBlock',String(b[2]))]),'Pick ball / single line hook'):''}
+  if(k==='boomLen'&&L.booms.length)return pickSel(L.booms.map(b=>['T-'+b+' ft',o('boomLen',String(b))]),'Pick boom length');
+  if(k==='jibWeight'&&L.jibStow.length){const bi=L.booms.indexOf(parseFloat(cur.v.boomLen));
+    if(bi<0)return '<p class="note" style="margin:2px 0 6px">Pick a Main Boom Length from its list further down to get this crane\'s jib weights here.</p>';
+    return pickSel([['Stowed on boom side – '+fmt(L.jibStow[bi])+' lbs',o('jibWeight',String(L.jibStow[bi]))]].concat(L.jibErect.filter(r=>r[1][bi]!=null).map(r=>[r[0]+' – '+fmt(r[1][bi])+' lbs',o('jibWeight',String(r[1][bi]))])),'Pick jib weight at T-'+L.booms[bi]+' ft, '+L.jibNote)}
+  if(k==='linePull'&&L.line.length)return pickSel(L.line.map((w,i)=>[(i+1)+' part'+(i?'s':'')+' of line – '+fmt(w)+' lbs max',Object.assign(o('parts',String(i+1)),o('linePull',String(Math.floor(w/(i+1)))))]),'Pick parts of line');
+  if(k==='outriggerExt'&&L.out&&L.out.length)return pickSel(L.out.map(x=>[x,o('outriggerExt',x)]),'Pick outrigger stance');
+  if((k==='mHeight'||k==='mvHeight')&&L.trav&&L.trav.h)return pickSel([[L.trav.h,o(k,L.trav.h)]],'Pick travel height ('+L.name+')');
+  if((k==='mWidth'||k==='mvWidth')&&L.trav&&L.trav.w)return pickSel([[L.trav.w,o(k,L.trav.w)]],'Pick travel width ('+L.name+')');
+  return ''}catch(e){return ''}}
+function synF(f,yna){return (f&&f.k?synPick(f.k):'')+synF0(f,yna)}
+function synF0(f,yna){
   if(f.h3)return `<div class="lab" style="margin-top:14px;font-weight:700;color:var(--acc);text-transform:uppercase">${esc(f.h3)}</div>`;
   const k=f.k,t=f.t||(yna?'yna':'text'),sub=f.sub?`<div style="margin:0 0 4px 10px;padding-left:10px;border-left:3px solid var(--line)">${f.sub.map(x=>synF(x)).join('')}</div>`:'';
   if(t==='yn'||t==='yna')return `<div style="padding:8px 0;border-top:1px solid #eee"><div class="qt">${f.n?`<b>${f.n}</b> `:''}${esc(f.l)}</div><div class="seg" data-seg="${k}">${(f.o||(t==='yn'?YN:YNA)).map(x=>`<button type="button" data-v="${x}" class="${cur.v[k]===x?'on':''}${x!=='Yes'?' no':''}">${x}</button>`).join('')}</div>${sub}</div>`;
