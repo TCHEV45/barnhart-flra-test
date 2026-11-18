@@ -12917,8 +12917,9 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
 /******/ ])["default"];
 });</script>
 <script>
-const TESTAPP=true;const BUILD='3.33';
+const TESTAPP=true;const BUILD='3.34';
 const NOTES=[
+['3.34',['Crane library: added Liebherr LTM 1055-3.2, 1095-5.1, 1100-4.2, 1110-5.1, 1130-5.1, 1250-5.1, 1250-6.1, 1400-7.1, 1450-8.1 and 1500-8.1 from their chart books','A crane only shows the pick-lists its chart book had numbers for; anything missing you type in as before'],1],
 ['3.33',['Renamed in the menu: Suncor is now “Suncor Mobile Crane SWP” and Crane moves is now “Barnhart On Site Crane Movement FLRA”'],1],
 ['3.32',['Menu button (☰) at the top left of the home screen replaces the row of tabs: FLRAs, Lift calcs only, Suncor, Crane moves','New: Site maps, starting with Cenovus Christina Lake South – add pictures of the site maps and open them with no signal, with zoom'],1],
 ['3.31',['Suncor FLRA is now in the main app: lift plan, pre-lift briefing checklist, crane lift FLRA and Appendix J movement checklist – fill in, sign, then save a PDF or a gallery picture on the paper pages','Barnhart On Site Crane Movement FLRA (HSE004D) is now in the main app, with its own list, sign-off and paper copy']],
@@ -13048,14 +13049,94 @@ function hzNorm(v){v.haz=(v.haz&&v.haz.length?v.haz:[{}]).map(h=>h&&h.items&&h.i
 const ram=(i,j,f)=>{const x=cur.v.haz[i].items[j][f]||'';return `<select class="ram ${x?'r'+RAMC[x]:''}" data-arr="haz" data-i="${i}" data-j="${j}" data-f="${f}"><option value="">– select –</option>${RAMS.map(r=>`<option value="${r}"${r===x?' selected':''}>${r} – ${RAMN[RAMC[r]]}</option>`).join('')}</select>`};
 
 /* ---------- built-in crane library (numbers only from manufacturer chart-book pages supplied by the user) ---------- */
-const CRLIB=[{id:'ltm1220-5.2',name:'Liebherr LTM 1220-5.2',
+const CRLIB=[{id:'ltm1055-3.2',name:'Liebherr LTM 1055-3.2',
+  cwt:[[0.6,1300],[4.1,9000],[4.7,10400],[5.5,12100],[7,15400],[12,26500]],
+  line:[9900,19800,29500,39000,48300,57500,66600,75600,84400,92600],
+  blocks:[[57.4,126500,882,7,14,0],[57.4,126500,706,7,14,0],[46.1,101600,882,5,11,0],[30.2,66600,617,3,7,0],[13.4,29500,430,1,3,0],[4.5,9900,165,0,1,0]],
+  booms:[33,46,56,66,79,89,102,112,125,131],
+  jibNote:'folding jib at 0° (chart book section 10)',
+  jibStow:[1014,750,595,507,419,375,331,309,265,265],
+  jibErect:[['K-31 ft on jib head',[3087,4631,3308,2867,2867,2867,2646,2426,2426,2205]],['K-52 ft on jib head',[3749,6395,4410,3749,3749,3749,3308,3087,3087,2867]]]},
+{id:'ltm1095-5.1',name:'Liebherr LTM 1095-5.1',
+  cwt:[[0.7,1500],[4.5,9900],[6.4,14100],[9.1,20100],[9.8,21600],[10.5,23200],[11,24200],[11.2,24700],[11.7,25800],[12.4,27300],[13.1,28900],[13.6,30000],[15,33100],[15.5,34200],[16.9,37300],[21.6,47600],[23,50700]],
+  line:[12600,25000,37300,49300,61200,72900,84400,95800,107000,118000,128800,139500,150000,160400,170600,180700,190600,200300,210000],
+  blocks:[[95.0,209500,1544,9,19,0],[77.4,170600,1103,7,15,0],[58.4,128800,1103,5,11,0],[38.3,84400,992,3,7,0],[16.0,35300,662,1,3,0],[5.7,12600,309,0,1,0]],
+  booms:[40.8,54.6,68.3,82.1,95.8,109.6,123.3,137.1,150.8,164.6,178.3,190.3],
+  jibNote:'folding jib at 0° (chart book section 10)',
+  jibStow:[2029,1521,1213,1014,860,750,684,617,551,507,463,441],
+  jibErect:[['K-34.4 ft on jib head, rest stowed',[5446,4917,4631,4366,4344,4101,4101,4079,3859,3837,3837,3837]],['K-62.3 ft on jib head',[5954,5292,5072,4851,4631,4631,4410,4410,4190,4190,4190,4190]],['K-8.2 ft on jib head',[3087,3087,3087,2867,2867,2867,2867,2867,2867,2867,2867,2867]]]},
+{id:'ltm1100-4.2',name:'Liebherr LTM 1100-4.2',
+  cwt:[[2.5,5500],[3.6,7900],[4,8800],[6,13200],[6.1,13400],[7.5,16500],[7.6,16800],[9.6,21200],[9.7,21400],[11.1,24500],[12.2,26900],[13.2,29100],[13.7,30200],[14.7,32400],[15.7,34600],[17.2,37900],[25.7,56700],[26.7,58900],[28.2,62200]],
+  line:[],
+  blocks:[[82.2,181100,2734,7,12,0],[75.9,167300,1544,5,11,0],[49.7,109600,1544,3,7,0],[22.0,48400,1014,1,3,0],[22.0,48400,551,1,3,0],[7.4,16400,551,0,1,0]],
+  booms:[37.6,49.8,62,74.2,86.4,98.7,110.9,123.1,135.3,147.5,156,159.7,170.3,171.9,182.5,184.1,196.8],
+  jibNote:'folding jib at 0° (chart book section 10)',
+  jibStow:[2205,1544,1323,1103,882,882,662,662,662,441,441,441,441,441,441,441,441],
+  jibErect:[['K-35.4 ft on jib head',[6395,9702,7056,6174,6174,6174,5954,5954,5954,5513,5072,5513,5513,5072,4851,4631,5293]],['K-62.3 ft on jib head',[8820,15435,10364,8820,8820,8820,8820,8820,8820,7938,6836,7938,7718,6836,6395,6174,6395]]]},
+{id:'ltm1110-5.1',name:'Liebherr LTM 1110-5.1',
+  cwt:[],
+  line:[],
+  blocks:[[82.2,181250,2740,7,12,0],[75.9,167360,1990,5,11,0],[75.9,167360,1650,5,11,0],[49.7,109600,1550,3,7,0],[49.7,109600,1100,3,7,0],[22.0,48500,1010,1,3,0],[22.0,48500,990,1,3,0],[7.4,16300,550,0,1,0]],
+  booms:[],
+  jibNote:'',
+  jibStow:[],
+  jibErect:[]},
+{id:'ltm1130-5.1',name:'Liebherr LTM 1130-5.1',
+  cwt:[[2.2,4900],[2.9,6400],[3.7,8200],[5.1,11200],[5.9,13000],[6.1,13500],[6.6,14500],[7.4,16300],[8.3,18300],[8.8,19400],[9,19800],[9.8,21600],[10.3,22700],[11.2,24700],[12.7,28000],[16,35300],[18.9,41700],[19.7,43400],[20.2,44600],[22.6,49800],[22.7,50100],[23.2,51200],[25.6,56400],[26.4,58200],[29.3,64600],[39.1,86200],[42,92600]],
+  line:[],
+  blocks:[[112.3,247700,2734,7,14,0],[90.2,198900,1985,5,11,0],[59.1,130400,1544,3,7,0],[26.1,57600,992,1,3,0],[8.8,19500,551,0,1,0]],
+  booms:[41.5,55.8,70.1,84.4,98.7,113,127.3,141.5,155.8,165.8,170.1,180.1,184.4,196.8],
+  jibNote:'folding jib at 0° (chart book section 10)',
+  jibStow:[2426,1764,1323,1103,882,882,662,662,662,662,662,441,441,441],
+  jibErect:[['K-35.4 ft on jib head',[6395,9041,9041,9041,9041,5954,5954,5292,4851,4851,4851,4631,4851,4631]],['K-62.3 ft on jib head',[7497,11907,11907,11907,11907,7277,7277,6615,5954,5733,5954,5513,5954,5513]]]},
+{id:'ltm1220-5.2',name:'Liebherr LTM 1220-5.2',
   cwt:[[12,26500],[22,48500],[32,70500],[34,75000],[42,92600],[44,97000],[54,119000],[74,163100]],
   line:[23400,46300,69000,91500,113300,135100,156500,177500,198200,218700,238800,258400,278000,298000],
   blocks:[[152,335000,4410,9,16,0],[135,298000,3308,7,14,0],[108.3,238800,2867,5,11,4410],[71,156500,3197,3,7,0],[71,156500,2293,3,7,3010],[31.3,69000,1918,1,3,2480],[10.6,23400,1103,0,1,0]],
   booms:[44,58,72,86,100,114,128,142,157,171,185,197],
   jibNote:'folding jib at 0° (chart book 10.1.2)',
   jibStow:[3109,2337,1874,1566,1345,1191,1058,948,860,794,728,684],
-  jibErect:[['K-40 ft on jib head, rest stowed',[9041,13451,9923,9923,9923,8600,8600,8600,7718,7056,6615,6615]],['K-72 ft on jib head',[11246,19404,13451,13451,13451,11246,11246,11246,9923,8820,8159,8159]],['K-95 ft on jib head',[15656,28445,18963,18963,18963,15215,15215,15215,13451,11687,10584,10364]],['K-118 ft on jib head',[20507,39249,25358,25358,25358,20066,20066,20066,17420,14774,13230,13010]]]}];
+  jibErect:[['K-40 ft on jib head, rest stowed',[9041,13451,9923,9923,9923,8600,8600,8600,7718,7056,6615,6615]],['K-72 ft on jib head',[11246,19404,13451,13451,13451,11246,11246,11246,9923,8820,8159,8159]],['K-95 ft on jib head',[15656,28445,18963,18963,18963,15215,15215,15215,13451,11687,10584,10364]],['K-118 ft on jib head',[20507,39249,25358,25358,25358,20066,20066,20066,17420,14774,13230,13010]]]},
+{id:'ltm1250-5.1',name:'Liebherr LTM 1250-5.1',
+  cwt:[[5,11000],[11,24000],[16,35000],[21,46000],[26,57000],[31,68000],[33,73000],[36,79000],[38,84000],[41,90000],[43,95000],[46,101000],[48,106000],[53,117000],[58,128000],[63,139000],[68,150000],[73,161000],[78,172000],[88,194000]],
+  line:[],
+  blocks:[[151.0,332800,7500,12,16,0],[151.0,332800,4410,9,16,0],[134.0,295500,3750,7,14,0],[107.7,237300,3530,5,11,0],[70.6,155600,3200,3,7,0],[31.2,68700,1920,1,3,0],[31.2,68700,1850,1,3,0],[10.5,23200,1100,0,1,0]],
+  booms:[42.8,57,71.2,73.6,85.3,99.5,104.4,113.7,127.9,135.2,142,156.2,166,170.3,180.2,184.5,194.4,196.8],
+  jibNote:'folding jib stowed on boom side (chart book 40.50)',
+  jibStow:[3750,3310,2210,2210,1760,1540,1540,1320,1320,1100,1100,1100,880,880,880,880,880,880],
+  jibErect:[]},
+{id:'ltm1250-6.1',name:'Liebherr LTM 1250-6.1',
+  cwt:[[10,22100],[17,37500],[22.5,49600],[35,77200],[47.5,104700],[60,132300],[72.5,159800],[85,187400],[97.5,215000]],
+  line:[23400,46300,69000,91500,113300,135100,156500,177500,198200,218700,238800,258400,278000,298000],
+  blocks:[[183.3,404200,7497,12,20,0],[176.0,389000,4410,9,19,0],[135.0,298000,3308,7,14,0],[108.3,238800,3197,5,11,4322],[108.3,238800,2867,5,11,4410],[71.0,156500,2293,3,7,3010],[31.3,69000,1918,1,3,2481],[31.3,69000,1852,1,3,2481],[10.6,23400,1103,0,1,0]],
+  booms:[51,68,85,102,119,136,153,170,187,204,222,236],
+  jibNote:'folding jib at 0° (chart book section 10)',
+  jibStow:[3043,2271,1830,1499,1301,1125,1014,904,816,750,706,662],
+  jibErect:[['K-40 ft on jib head',[9041,12789,12789,12789,12789,8379,8379,7718,7277,7056,7056,5954]],['K-63 ft on jib head',[10364,16758,10584,16758,16758,10143,10143,9261,8600,8159,8159,8159]],['K-72 ft on jib head',[10805,17861,17861,17861,17861,10584,10584,9702,9041,8600,8600,8379]],['K-86 ft on jib head',[14112,24476,24476,24476,24476,13671,13671,12348,11246,10805,10805,10584]],['K-95 ft on jib head',[14774,25799,25799,25799,25799,14333,14333,12789,11687,11025,11025,10805]],['K-118 ft on jib head',[19184,35280,35280,35280,35280,18522,18522,16317,14774,13892,13892,13451]]]},
+{id:'ltm1400-7.1',name:'Liebherr LTM 1400-7.1',
+  cwt:[[20,44100],[30,66100],[40,88200],[50,110200],[60,132300],[70,154300],[80,176400],[90,198400],[100,220500],[110,242500],[120,264600],[130,286600],[140,308600]],
+  line:[],
+  blocks:[[240.0,529200,8150,11,22,0],[202.0,445000,7275,9,18,0],[171.6,378300,5950,7,15,7720],[129.6,285700,5070,5,11,0],[84.9,187200,3970,3,7,0],[37.5,82700,3100,1,3,3860],[12.5,28000,1550,0,1,0]],
+  booms:[],
+  jibNote:'',
+  jibStow:[],
+  jibErect:[]},
+{id:'ltm1450-8.1',name:'Liebherr LTM 1450-8.1',
+  cwt:[],
+  line:[],
+  blocks:[[239.3,527600,8200,11,22,0],[201.5,444300,7300,9,18,0],[171.6,378400,6000,7,15,0],[129.6,285700,5100,5,11,0],[84.9,187300,5700,3,7,0],[84.9,187300,4000,3,7,0],[37.5,82700,3100,1,3,0],[12.7,28000,1500,0,1,0]],
+  booms:[52.7,70,87.4,90.4,99.3,104.7,107.7,122,125.1,128.1,139.4,145.4,156.7,162.8,165.8,174.1,183.1,191.4,200.5,203.5,208.8,217.8,220.8,226.1,235.1,238.2,241.2,243.4,252.5,258.5],
+  jibNote:'folding jib stowed on boom side (chart book 40.50)',
+  jibStow:[2300,1720,1370,1320,1210,1150,1120,990,970,950,860,840,770,750,730,680,660,640,600,600,570,550,550,530,500,500,500,490,490,460],
+  jibErect:[]},
+{id:'ltm1500-8.1',name:'Liebherr LTM 1500-8.1',
+  cwt:[],
+  line:[],
+  blocks:[[273.9,604000,10805,13,26,0],[250.0,551250,8159,11,23,0],[231.6,510600,7277,9,19,0],[188.2,414900,5954,7,15,0],[142.1,313300,5072,5,11,0],[93.1,205300,3969,3,7,0],[40.0,88200,3087,1,3,0],[12.5,27500,1544,0,1,0]],
+  booms:[],
+  jibNote:'',
+  jibStow:[],
+  jibErect:[]}];
 if(!TESTAPP)CRLIB.length=0; /* crane library is test-only until pushed to main */
 const libOf=(v,c)=>CRLIB.find(x=>x.id===v['c'+c+'_lib'])||null;
 const pickSel=(opts,ph)=>`<select class="pick" data-cpick aria-label="${esc(ph)}"><option value="">▾ ${esc(ph)}</option>${opts.map(o=>`<option value="${esc(JSON.stringify(o[1]))}">${esc(o[0])}</option>`).join('')}</select>`;
@@ -13069,13 +13150,13 @@ function craneCard(c){
   ${L?'<p class="note" style="margin:4px 0 0">Pick-lists below and on the Lift calc tab come from this crane\'s chart book. You can still type your own numbers. Gross capacity is always read off the chart by you.</p>':''}
   ${tx(p+'make','Crane Make and Model')}
   ${tx(p+'unit','Unit Number')}
-  <div class="lab">CWT used</div>${L?pickSel(L.cwt.map(w=>[fmt(w[1])+' lbs ('+w[0]+' t)',Object.assign(set('cwt',String(w[1])),set('cwtU','lbs'))]),'Pick counterweight'):''}
+  <div class="lab">CWT used</div>${L&&L.cwt.length?pickSel(L.cwt.map(w=>[fmt(w[1])+' lbs ('+w[0]+' t)',Object.assign(set('cwt',String(w[1])),set('cwtU','lbs'))]),'Pick counterweight'):''}
   <div style="display:grid;grid-template-columns:1fr 150px;gap:8px;align-items:start"><input type="text" inputmode="decimal" data-k="${p}cwt" value="${val(p+'cwt')}" autocomplete="off" aria-label="Counterweight used"><div class="seg" style="margin:0" data-seg="${p}cwtU">${['lbs','kg'].map(o=>`<button type="button" data-v="${o}" class="${(SH()[p+'cwtU']||'lbs')===o?'on':''}">${o}</button>`).join('')}</div></div>
   ${tx(p+'op','Operator(s) (print name)')}
   ${seg(p+'out','Crane Outrigger Position (if applicable)',['Half','Full Ext','N/A'])}
   ${tx(p+'mats','Outrigger Mats – indicate mat type')}
   ${seg(p+'on','Hoisting will be on',['Boom','Jib','Luffer'])}
-  <div class="lab">Hoisting Tackle</div>${L?pickSel(L.line.map((w,i)=>[(i+1)+' part'+(i?'s':'')+' of line – '+fmt(w)+' lbs',Object.assign(set('pts',String(i+1)),set('lcap',fmt(w)+' lbs'))]),'Pick parts of line')+pickSel(L.blocks.filter((b,i)=>L.blocks.findIndex(x=>x[1]===b[1]&&x[3]===b[3])===i).map(b=>[b[0]+' t · '+shv(b)+' · cap '+fmt(b[1])+' lbs',set('hcap',fmt(b[1])+' lbs')]),'Pick hook block'):''}
+  <div class="lab">Hoisting Tackle</div>${L?(L.line.length?pickSel(L.line.map((w,i)=>[(i+1)+' part'+(i?'s':'')+' of line – '+fmt(w)+' lbs',Object.assign(set('pts',String(i+1)),set('lcap',fmt(w)+' lbs'))]),'Pick parts of line'):'')+pickSel(L.blocks.filter((b,i)=>L.blocks.findIndex(x=>x[1]===b[1]&&x[3]===b[3])===i).map(b=>[b[0]+' t · '+shv(b)+' · cap '+fmt(b[1])+' lbs',set('hcap',fmt(b[1])+' lbs')]),'Pick hook block'):''}
   <div class="row3">${tx(p+'pts','Pts of Line')}${tx(p+'lcap','Line Cap')}${tx(p+'hcap','Hook Cap')}</div>
   ${seg(p+'crawl','Crawlers',['N/A','Extended','Retracted'])}
   ${seg(p+'cmats','Crane Mats to be used? (Crawlers)',YN)}
@@ -13150,8 +13231,8 @@ calc:()=>{if(ci>NC(SH()))ci=NC(SH());const u=SH().units||'lbs',p='k'+ci+'_';cons
   const L=libOf(SH(),SH().two==='Yes'?crOf(SH(),ci):1),ks=(k,v)=>{const o={};o[p+k]=v;return o},bi=L?L.booms.indexOf(parseFloat(SH()[p+'boom'])):-1;
   const pBlock=L?pickSel([].concat(...L.blocks.map(b=>[[b[0]+' t · '+shv(b)+' · '+fmt(b[2])+' lbs',ks('block',libW(b[2],u))]].concat(b[5]?[[b[0]+' t · '+shv(b)+' + added weight · '+fmt(b[5])+' lbs',ks('block',libW(b[5],u))]]:[]))),'Pick hook block ('+L.name+')'):'';
   const pBall=L?pickSel(L.blocks.filter(b=>!b[3]).map(b=>[b[0]+' t · single line hook · '+fmt(b[2])+' lbs',ks('ball',libW(b[2],u))]),'Pick ball / single line hook'):'';
-  const pJib=L?(bi<0?'<p class="note" style="margin:2px 0 6px">Pick a boom length from the list below to get this crane\'s jib weights.</p>':pickSel([['Stowed on boom side – '+fmt(L.jibStow[bi])+' lbs',Object.assign(ks('jibS',libW(L.jibStow[bi],u)),ks('jibE',''))]].concat(L.jibErect.map(r=>[r[0]+' – '+fmt(r[1][bi])+' lbs',Object.assign(ks('jibE',libW(r[1][bi],u)),ks('jibS',''))])),'Pick jib weight at T-'+L.booms[bi]+' ft, '+L.jibNote)):'';
-  const pBoom=L?pickSel(L.booms.map(b=>['T-'+b+' ft',ks('boom',b+' ft')]),'Pick boom length'):'';
+  const pJib=L&&L.booms.length?(bi<0?'<p class="note" style="margin:2px 0 6px">Pick a boom length from the list below to get this crane\'s jib weights.</p>':pickSel([['Stowed on boom side – '+fmt(L.jibStow[bi])+' lbs',Object.assign(ks('jibS',libW(L.jibStow[bi],u)),ks('jibE',''))]].concat(L.jibErect.map(r=>[r[0]+' – '+fmt(r[1][bi])+' lbs',Object.assign(ks('jibE',libW(r[1][bi],u)),ks('jibS',''))])),'Pick jib weight at T-'+L.booms[bi]+' ft, '+L.jibNote)):'';
+  const pBoom=L&&L.booms.length?pickSel(L.booms.map(b=>['T-'+b+' ft',ks('boom',b+' ft')]),'Pick boom length'):'';
   return `${sheetBar()}${seg('units','Weights in',['lbs','kg'])}
   <div class="calcsel">${Array.from({length:NC(SH())},(_,j)=>j+1).map(i=>{const r=calc(SH(),i);return `<button type="button" data-ci="${i}" class="${i===ci?'on':''}">Calc #${i}${SH().two==='Yes'?' · '+unitLab(SH(),crOf(SH(),i)):''}<small id="cs${i}">${isFinite(r.pct)?fmt(r.pct,1)+'%':'—'}</small></button>`}).join('')}</div>
   ${SH().two==='Yes'?`<div class="card"><div class="lab">Calc #${ci} is for which crane?</div><div class="seg" data-seg="${p}cr">${[1,2].map(c=>`<button type="button" data-v="${c}" class="${crOf(SH(),ci)===c?'on':''}">${unitLab(SH(),c)}</button>`).join('')}</div><p class="note" style="margin:6px 0 0">Unit numbers come from the Crane tab.</p></div>`:''}
