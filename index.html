@@ -12917,8 +12917,9 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
 /******/ ])["default"];
 });</script>
 <script>
-const TESTAPP=true;const BUILD='3.39';
+const TESTAPP=true;const BUILD='3.40';
 const NOTES=[
+['3.40',['Suncor Mobile Crane SWP: Crane Configuration now comes before Load Weights on the Lift Plan tab, so the crane is set up before the lift calc. The PDF and picture copies are unchanged']],
 ['3.39',['Crane library now works on the Suncor Mobile Crane SWP: pick the crane under Crane Make/Capacity, then pick counterweight, hook block, ball, boom length, jib weight and parts of line','Suncor SWP: Unit and Crane Make now carry over to the Movement checklist (Unit # and Size) unless you have typed something different there','Barnhart On Site Crane Movement FLRA: crane library pick fills Crane Size','FLRA Overlap step 4: one tap fills a line with this FLRA’s crane make, unit # and operator'],1],
 ['3.38',['Crane library: added Liebherr LTM 1045-3.1, 1070-4.1, 1100-4.1 and 1160-5.1 (counterweights, hook blocks, boom lengths and jib weights read from the scanned chart books)'],1],
 ['3.37',['Crane library: boom length pick-lists added for the LTM 1110-5.1, 1400-7.1, 1500-8.1 and 11200-9.1'],1],
@@ -13697,16 +13698,6 @@ slift:{sub:'Mobile Crane Operation Safe Work Practice – Syncrude. Appendix A �
   {k:'highestUtil',l:'Lift with Highest Utilization'},
   {k:'liftClass',l:'Lift Class',t:'radio',o:['Basic','Complex']},
   {k:'complexCriteria',l:'Complex Criteria',t:'check',o:['Capacity Utilization >90%','Multi Crane Lift where either one crane exceeds 75% of the crane capacity','Personnel Basket (if yes, use APPX E)','Work Zone within MSAD of Power Line','Sudden Load Transfer','Lift Over Occupied Building']}]},
- {h:'Load Weights',fields:[
-  {k:'loadWeightBy',l:'Load Weight Determined by',t:'check',o:['Drawing','Document','Name Plate','Calculation','LML']},
-  {k:'plannedLoad',l:'Planned Load Weight',t:'num',u:'lbs'},{k:'contingency',l:'Contingency(s)',t:'num',u:'lbs'},
-  {t:'out',id:'synFact',l:'Factored Load Weight (lbs)'},
-  {k:'mainBlock',l:'Main Block Weight',t:'num',u:'lbs'},{k:'auxBlock',l:'Aux. Block Weight',t:'num',u:'lbs'},
-  {k:'auxSheave',l:'Aux. Sheave Weight',t:'num',u:'lbs'},{k:'jibWeight',l:'Jib Weight',t:'num',u:'lbs'},
-  {k:'riggingWeight',l:'Rigging Weight',t:'num',u:'lbs'},
-  {t:'total'},
-  {k:'maxRadius',l:'Max. Radius',t:'num',u:'ft'},{k:'chartCap',l:'Chart Capacity',t:'num',u:'lbs'},
-  {t:'pct'}]},
  {h:'Crane Configuration',fields:[
   {k:'capBasis',l:'Crane Capacity Basis',t:'check',o:['360°','Front','Rear','Rubber','Pick & Carry']},
   {k:'outriggerExt',l:'Outrigger (or crawlers) extension (ft)'},
@@ -13719,6 +13710,16 @@ slift:{sub:'Mobile Crane Operation Safe Work Practice – Syncrude. Appendix A �
   {t:'out',id:'synLine',l:'Line Pull × Parts of Line (lbs)'},
   {k:'teleConfig',l:'Configuration of Telescopic Boom Sections'},
   {k:'date',l:'Date',t:'date'},{k:'time',l:'Time',t:'time'}]},
+ {h:'Load Weights',fields:[
+  {k:'loadWeightBy',l:'Load Weight Determined by',t:'check',o:['Drawing','Document','Name Plate','Calculation','LML']},
+  {k:'plannedLoad',l:'Planned Load Weight',t:'num',u:'lbs'},{k:'contingency',l:'Contingency(s)',t:'num',u:'lbs'},
+  {t:'out',id:'synFact',l:'Factored Load Weight (lbs)'},
+  {k:'mainBlock',l:'Main Block Weight',t:'num',u:'lbs'},{k:'auxBlock',l:'Aux. Block Weight',t:'num',u:'lbs'},
+  {k:'auxSheave',l:'Aux. Sheave Weight',t:'num',u:'lbs'},{k:'jibWeight',l:'Jib Weight',t:'num',u:'lbs'},
+  {k:'riggingWeight',l:'Rigging Weight',t:'num',u:'lbs'},
+  {t:'total'},
+  {k:'maxRadius',l:'Max. Radius',t:'num',u:'ft'},{k:'chartCap',l:'Chart Capacity',t:'num',u:'lbs'},
+  {t:'pct'}]},
  {h:'Verification Section',fields:[
   {k:'preUse',l:'Pre-Use Inspection Completed',t:'yn'},
   {k:'crushZone',l:'Counterweight Crush Zone Barricaded',t:'yn'},
@@ -13881,7 +13882,7 @@ function synPick(k){try{
   if(k==='auxBlock'){const a=L.blocks.filter(b=>!b[3]);return a.length?pickSel(a.map(b=>[b[0]+' t · single line hook · '+fmt(b[2])+' lbs',o('auxBlock',String(b[2]))]),'Pick ball / single line hook'):''}
   if(k==='boomLen'&&L.booms.length)return pickSel(L.booms.map(b=>['T-'+b+' ft',o('boomLen',String(b))]),'Pick boom length');
   if(k==='jibWeight'&&L.jibStow.length){const bi=L.booms.indexOf(parseFloat(cur.v.boomLen));
-    if(bi<0)return '<p class="note" style="margin:2px 0 6px">Pick a Main Boom Length from its list further down to get this crane\'s jib weights here.</p>';
+    if(bi<0)return '<p class="note" style="margin:2px 0 6px">Pick a Main Boom Length from its list (under Crane Configuration) to get this crane\'s jib weights here.</p>';
     return pickSel([['Stowed on boom side – '+fmt(L.jibStow[bi])+' lbs',o('jibWeight',String(L.jibStow[bi]))]].concat(L.jibErect.filter(r=>r[1][bi]!=null).map(r=>[r[0]+' – '+fmt(r[1][bi])+' lbs',o('jibWeight',String(r[1][bi]))])),'Pick jib weight at T-'+L.booms[bi]+' ft, '+L.jibNote)}
   if(k==='linePull'&&L.line.length)return pickSel(L.line.map((w,i)=>[(i+1)+' part'+(i?'s':'')+' of line – '+fmt(w)+' lbs max',Object.assign(o('parts',String(i+1)),o('linePull',String(Math.floor(w/(i+1)))))]),'Pick parts of line');
   if(k==='outriggerExt'&&L.out&&L.out.length)return pickSel(L.out.map(x=>[x,o('outriggerExt',x)]),'Pick outrigger stance');
