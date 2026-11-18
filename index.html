@@ -12917,8 +12917,9 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
 /******/ ])["default"];
 });</script>
 <script>
-const TESTAPP=true;const BUILD='3.36';
+const TESTAPP=true;const BUILD='3.37';
 const NOTES=[
+['3.37',['Crane library: boom length pick-lists added for the LTM 1110-5.1, 1400-7.1, 1500-8.1 and 11200-9.1'],1],
 ['3.36',['Crane library: added Liebherr LTM 11200-9.1','Parts-of-line pick-lists added for the LTM 1100-4.2, 1130-5.1, 1250-5.1 and 1400-7.1; counterweights added for the LTM 1500-8.1','LTM 1250-5.1 line pull uses the chart book ASME B30.5 column (Canada/USA), listed up to 13 parts'],1],
 ['3.35',['Crane library: counterweight pick-lists added for the LTM 1110-5.1 and LTM 1450-8.1'],1],
 ['3.34',['Crane library: added Liebherr LTM 1055-3.2, 1095-5.1, 1100-4.2, 1110-5.1, 1130-5.1, 1250-5.1, 1250-6.1, 1400-7.1, 1450-8.1 and 1500-8.1 from their chart books','A crane only shows the pick-lists its chart book had numbers for; anything missing you type in as before'],1],
@@ -13079,7 +13080,7 @@ const CRLIB=[{id:'ltm1055-3.2',name:'Liebherr LTM 1055-3.2',
   cwt:[[0.8,1760],[1.1,2425],[3.3,7280],[3.6,7900],[6.9,15200],[7.2,15900],[7.7,17000],[8.5,18750],[8.8,19400],[9.8,21600],[10.6,23370],[10.9,24000],[11,24250],[11.3,24900],[13.1,28900],[13.4,29550],[14.6,32200],[14.9,32850],[16.7,36800],[17,37500],[20.5,45200],[21.8,48100],[22.1,48700],[22.6,49800],[22.9,50500],[24.1,53100],[24.4,53800],[25.1,55100],[25.4,56000],[25.7,56670],[26.2,57770],[26.5,58400],[26.6,58650],[26.9,59300],[27.9,61500],[28.2,62200],[28.7,63280],[29,63950]],
   line:[],
   blocks:[[82.2,181250,2740,7,12,0],[75.9,167360,1990,5,11,0],[75.9,167360,1650,5,11,0],[49.7,109600,1550,3,7,0],[49.7,109600,1100,3,7,0],[22.0,48500,1010,1,3,0],[22.0,48500,990,1,3,0],[7.4,16300,550,0,1,0]],
-  booms:[],
+  booms:[37.7,49.9,62.1,64.2,74.3,76.5,86.5,88.6,90.7,98.7,103,110.9,115.2,117.3,123.1,127.4,129.5,135.3,139.6,147.5,153.9,156,159.7,166.1,168.2,170.3,171.9,178.3,182.5,184.1,186.2,190.5,192.6,194.7,196.8],
   jibNote:'',
   jibStow:[],
   jibErect:[]},
@@ -13119,7 +13120,7 @@ const CRLIB=[{id:'ltm1055-3.2',name:'Liebherr LTM 1055-3.2',
   cwt:[[20,44100],[30,66100],[40,88200],[50,110200],[60,132300],[70,154300],[80,176400],[90,198400],[100,220500],[110,242500],[120,264600],[130,286600],[140,308600]],
   line:[28000,55600,82700,109400,135800,161800,187200,212500,237200,262000,285700,309300,332700,355800,378300,400600,422600,445000],
   blocks:[[240.0,529200,8150,11,22,0],[202.0,445000,7275,9,18,0],[171.6,378300,5950,7,15,7720],[129.6,285700,5070,5,11,0],[84.9,187200,3970,3,7,0],[37.5,82700,3100,1,3,3860],[12.5,28000,1550,0,1,0]],
-  booms:[],
+  booms:[51,67,84,101,118,135,152,169,186,197],
   jibNote:'',
   jibStow:[],
   jibErect:[]},
@@ -13135,7 +13136,7 @@ const CRLIB=[{id:'ltm1055-3.2',name:'Liebherr LTM 1055-3.2',
   cwt:[[15,33100],[30,66100],[45,99200],[60,132300],[75,165400],[90,198400],[105,231500],[120,264600],[135,297600],[165,363800]],
   line:[],
   blocks:[[273.9,604000,10805,13,26,0],[250.0,551250,8159,11,23,0],[231.6,510600,7277,9,19,0],[188.2,414900,5954,7,15,0],[142.1,313300,5072,5,11,0],[93.1,205300,3969,3,7,0],[40.0,88200,3087,1,3,0],[12.5,27500,1544,0,1,0]],
-  booms:[],
+  booms:[53,70,87,104,121,138,155,164,172,189,206,224,241,258,276],
   jibNote:'',
   jibStow:[],
   jibErect:[]},
@@ -13143,7 +13144,7 @@ const CRLIB=[{id:'ltm1055-3.2',name:'Liebherr LTM 1055-3.2',
   cwt:[[22,48500],[42,92600],[62,136700],[72,158700],[82,180800],[92,202800],[102,224900],[112,246900],[122,269000],[142,313100],[162,357100],[182,401200],[202,445300]],
   line:[37000,73400,109400,144600,179500,213600,247400,280700,313500,345700,377400,408800,439600,470000,500000,529300,558500,587100,615100,642900,670200,697100,723600,749800,775600,801000],
   blocks:[[363.0,801000,11025,13,26,0],[320.0,705600,10143,11,23,0]],
-  booms:[],
+  booms:[56,60,76,79,95,98,114,117,133,137,152,156,171,175,190,194,213,232,251,271,290,309,328],
   jibNote:'',
   jibStow:[],
   jibErect:[]}];
@@ -13241,7 +13242,7 @@ calc:()=>{if(ci>NC(SH()))ci=NC(SH());const u=SH().units||'lbs',p='k'+ci+'_';cons
   const L=libOf(SH(),SH().two==='Yes'?crOf(SH(),ci):1),ks=(k,v)=>{const o={};o[p+k]=v;return o},bi=L?L.booms.indexOf(parseFloat(SH()[p+'boom'])):-1;
   const pBlock=L?pickSel([].concat(...L.blocks.map(b=>[[b[0]+' t · '+shv(b)+' · '+fmt(b[2])+' lbs',ks('block',libW(b[2],u))]].concat(b[5]?[[b[0]+' t · '+shv(b)+' + added weight · '+fmt(b[5])+' lbs',ks('block',libW(b[5],u))]]:[]))),'Pick hook block ('+L.name+')'):'';
   const pBall=L?pickSel(L.blocks.filter(b=>!b[3]).map(b=>[b[0]+' t · single line hook · '+fmt(b[2])+' lbs',ks('ball',libW(b[2],u))]),'Pick ball / single line hook'):'';
-  const pJib=L&&L.booms.length?(bi<0?'<p class="note" style="margin:2px 0 6px">Pick a boom length from the list below to get this crane\'s jib weights.</p>':pickSel([['Stowed on boom side – '+fmt(L.jibStow[bi])+' lbs',Object.assign(ks('jibS',libW(L.jibStow[bi],u)),ks('jibE',''))]].concat(L.jibErect.map(r=>[r[0]+' – '+fmt(r[1][bi])+' lbs',Object.assign(ks('jibE',libW(r[1][bi],u)),ks('jibS',''))])),'Pick jib weight at T-'+L.booms[bi]+' ft, '+L.jibNote)):'';
+  const pJib=L&&L.jibStow.length?(bi<0?'<p class="note" style="margin:2px 0 6px">Pick a boom length from the list below to get this crane\'s jib weights.</p>':pickSel([['Stowed on boom side – '+fmt(L.jibStow[bi])+' lbs',Object.assign(ks('jibS',libW(L.jibStow[bi],u)),ks('jibE',''))]].concat(L.jibErect.map(r=>[r[0]+' – '+fmt(r[1][bi])+' lbs',Object.assign(ks('jibE',libW(r[1][bi],u)),ks('jibS',''))])),'Pick jib weight at T-'+L.booms[bi]+' ft, '+L.jibNote)):'';
   const pBoom=L&&L.booms.length?pickSel(L.booms.map(b=>['T-'+b+' ft',ks('boom',b+' ft')]),'Pick boom length'):'';
   return `${sheetBar()}${seg('units','Weights in',['lbs','kg'])}
   <div class="calcsel">${Array.from({length:NC(SH())},(_,j)=>j+1).map(i=>{const r=calc(SH(),i);return `<button type="button" data-ci="${i}" class="${i===ci?'on':''}">Calc #${i}${SH().two==='Yes'?' · '+unitLab(SH(),crOf(SH(),i)):''}<small id="cs${i}">${isFinite(r.pct)?fmt(r.pct,1)+'%':'—'}</small></button>`}).join('')}</div>
