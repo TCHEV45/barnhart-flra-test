@@ -12928,6 +12928,7 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
 <script>
 const TESTAPP=true;const BUILD='3.48';
 const NOTES=[
+['3.48',['Menu button (☰) at the top left of the home screen replaces the row of tabs','New: Site maps, starting with Cenovus Christina Lake South – add pictures of the site maps and open them with no signal, with zoom','Renamed: Suncor is now “Suncor Mobile Crane SWP” and Crane moves is now “Barnhart On Site Crane Movement FLRA”','Crane library is now in the main app with the 16 cranes that have full info, grouped by type and make: All Terrain – Liebherr (LTM 1045-3.1, 1055-3.2, 1070-4.1, 1095-5.1, 1100-4.1, 1100-4.2, 1130-5.1, 1160-5.1, 1220-5.2, 1250-6.1), Rough Terrain – Grove (RT635C, RT870, RT880E, RT9130E, RT9130E-2) and Carry Deck – Grove (YB4415)','Pick a crane on the lift calc for counterweight, hook block, ball, boom length, jib weight and parts of line pick-lists – you can still type your own numbers; gross capacity is always entered by you','The crane library also works on the Suncor Mobile Crane SWP and the Barnhart On Site Crane Movement FLRA: outrigger stance, travel width and height pick-lists, and the unit # fills in wherever it is written more than once','Outrigger stances and travel sizes come from the manufacturers\' data sheets online, in feet and inches rounded up to the next inch; all-terrain travel sizes assume 525/80 R 25 tyres – check them against the unit','Suncor Mobile Crane SWP: Permit #, Emergency Assembly Area, Emergency Meeting Point and Emergency Phone # / Radio are on both the Crane FLRA and Sign-offs tabs, linked – fill either one and both match','Link a Barnhart On Site Crane Movement FLRA to a Barnhart Crane Lift FLRA: shared details fill both, jump between them, export them together, or start a linked movement from the FLRA Job tab','Copyright notice added to the home screen'],2],
 ['3.48',['Copyright notice added to the home screen and the app files'],1],
 ['3.47',['Link a Barnhart On Site Crane Movement FLRA to a Barnhart Crane Lift FLRA: from the FLRA Job tab start a new linked movement or link an existing one; from the movement Job tab link to an FLRA','Linked forms share date, prepared by, client, work location, job number, crane make/model and library pick, unit #, operator and permit # – type once, both update','Open either form from the other with one tap; Unlink keeps what is filled in','The FLRA PDF and picture copies include the linked crane movement pages'],1],
 ['3.46',['Suncor Mobile Crane SWP: Permit #, Emergency Assembly Area, Emergency Meeting Point and Emergency Phone # / Radio are back on the Crane FLRA tab and also stay on the Sign-offs tab. Both are linked – fill either one and the other matches'],1],
@@ -12966,7 +12967,7 @@ const NOTES=[
 ['3.12',['PDF copy now matches the paper form layout','Extra lift calcs and sheets print together after page 2','Short file names: date and unit number','New "Picture" option to save a copy to the gallery']]];
 const vnum=x=>{const p=String(x).split('.');return (+p[0]||0)*1000+(+p[1]||0)};
 function showNotes(){const b=vnum(BUILD);$('#bnTitle').textContent=(TESTAPP?'Test build ':'Build ')+BUILD+' – what changed';
-  $('#bnBody').innerHTML=NOTES.filter(n=>vnum(n[0])<=b&&(!n[2]||CRLIB.length)).map(n=>`<div style="margin:10px 0 2px;font-weight:700;color:var(--acc)">Build ${n[0]}</div><ul style="margin:0;padding-left:20px">${n[1].map(t=>`<li style="margin:3px 0">${esc(t)}</li>`).join('')}</ul>`).join('')||'<p class="note">No notes for this build.</p>';
+  $('#bnBody').innerHTML=NOTES.filter(n=>vnum(n[0])<=b&&(!n[2]||(n[2]===2?!TESTAPP:TESTAPP))).map(n=>`<div style="margin:10px 0 2px;font-weight:700;color:var(--acc)">Build ${n[0]}</div><ul style="margin:0;padding-left:20px">${n[1].map(t=>`<li style="margin:3px 0">${esc(t)}</li>`).join('')}</ul>`).join('')||'<p class="note">No notes for this build.</p>';
   $('#bnm').classList.remove('hide')}
 /* ---------- storage ---------- */
 const KEY='liftcalc.v1';
@@ -13445,7 +13446,7 @@ const CRLIB=[{id:'ltm1045-3.1',name:'Liebherr LTM 1045-3.1',cat:'All Terrain –
   jibStow:[],
   jibErect:[]},
 {id:"grove-gmk6400",
-  name:"Grove GMK6400",
+  name:"Grove GMK6400",gap:"160 t block weight (lb and kg printed differently)",
   cat:"All Terrain – Grove",
   web:1,
   out:[["Full: 27'11\" wide x 28'7\" long","27'11\" x 28'7\" (full)"],["Partial: 24'4\" wide x 28'7\" long","24'4\" x 28'7\" (partial)"],["Partial: 20'9\" wide x 28'7\" long","20'9\" x 28'7\" (partial)"],["Partial: 16'5\" wide x 28'7\" long","16'5\" x 28'7\" (partial)"],["Retracted: 8'11\" wide x 28'7\" long","8'11\" x 28'7\" (retracted)"]],
@@ -13458,7 +13459,7 @@ const CRLIB=[{id:'ltm1045-3.1',name:'Liebherr LTM 1045-3.1',cat:'All Terrain –
   jibStow:[],
   jibErect:[]},
 {id:"grove-gmk7550",
-  name:"Grove GMK7550",
+  name:"Grove GMK7550",gap:"160 t block weight (lb and kg printed differently)",
   cat:"All Terrain – Grove",
   web:1,
   out:[["Fully extended (100%): 29'3\" wide x 28'9\" long","29'3\" x 28'9\" (fully extended (100%))"],["Partially extended (50%): 20'1\" wide x 28'9\" long","20'1\" x 28'9\" (partially extended (50%))"]],
@@ -13627,7 +13628,7 @@ const CRLIB=[{id:'ltm1045-3.1',name:'Liebherr LTM 1045-3.1',cat:'All Terrain –
   jibStow:[0,0,0,0,0,0,0,0,0,0],
   jibErect:[["33 ft Extension erected (deduct from main boom)",[3700,3700,3700,3700,3700,3700,3700,3700,3700,3700]],["56 ft Extension erected (deduct from main boom)",[7830,7830,7830,7830,7830,7830,7830,7830,7830,7830]],["76 ft erected (deduct from main boom)",[10350,10350,10350,10350,10350,10350,10350,10350,10350,10350]],["96 ft erected (deduct from main boom)",[13300,13300,13300,13300,13300,13300,13300,13300,13300,13300]]]},
 {id:"grove-rt890e",
-  name:"Grove RT890E",
+  name:"Grove RT890E",gap:"80 USt 5-sheave block weight (printed heavier than the 90 USt block)",
   cat:"Rough Terrain – Grove",
   web:1,
   out:[["Full extend: 24' spread","24' (full extend)"],["Mid-Extend: 17'4\" spread","17'4\" (mid-extend)"],["Retracted: 10'4\" spread","10'4\" (retracted)"]],
@@ -13692,7 +13693,7 @@ const CRLIB=[{id:'ltm1045-3.1',name:'Liebherr LTM 1045-3.1',cat:'All Terrain –
   jibStow:[],
   jibErect:[]},
 {id:"tadano-tr-300xl-3",
-  name:"Tadano TR-300XL-3",
+  name:"Tadano TR-300XL-3",gap:"30 ton block and 4.4 ton ball weights",
   cat:"Rough Terrain – Tadano",
   web:1,
   out:[["Beams extend to (max): 20'8-1/16\" spread (center to center)","20'8-1/16\" (beams extend to (max))"],["Retract to within: 8'6-3/8\" spread (center to center)","8'6-3/8\" (retract to within)"]],
@@ -13718,7 +13719,7 @@ const CRLIB=[{id:'ltm1045-3.1',name:'Liebherr LTM 1045-3.1',cat:'All Terrain –
   jibStow:[],
   jibErect:[]},
 {id:"tadano-tr-350xl-3",
-  name:"Tadano TR-350XL-3",
+  name:"Tadano TR-350XL-3",gap:"35 ton block and 4.4 ton ball weights",
   cat:"Rough Terrain – Tadano",
   web:1,
   out:[["Mid. Extension: 19'4-1/4\" spread (center to center)","19'4-1/4\" (mid. extension)"],["Mid. Extension: 16'4-7/8\" spread (center to center)","16'4-7/8\" (mid. extension)"]],
@@ -13731,7 +13732,7 @@ const CRLIB=[{id:'ltm1045-3.1',name:'Liebherr LTM 1045-3.1',cat:'All Terrain –
   jibStow:[],
   jibErect:[]},
 {id:"tadano-tr-450xl-4",
-  name:"Tadano TR-450XL-4",
+  name:"Tadano TR-450XL-4",gap:"45 and 25 ton block and 5.5 ton ball weights",
   cat:"Rough Terrain – Tadano",
   web:1,
   out:[["Max. Extension: 22'11-5/8\" spread (center to center)","22'11-5/8\" (max. extension)"],["Mid. Extension: 21'3-7/8\" spread (center to center)","21'3-7/8\" (mid. extension)"],["Mid. Extension: 16'4-7/8\" spread (center to center)","16'4-7/8\" (mid. extension)"]],
@@ -13744,7 +13745,7 @@ const CRLIB=[{id:'ltm1045-3.1',name:'Liebherr LTM 1045-3.1',cat:'All Terrain –
   jibStow:[],
   jibErect:[]},
 {id:"tadano-gr-500xl-1",
-  name:"Tadano GR-500XL-1",
+  name:"Tadano GR-500XL-1",gap:"50 ton block weight and counterweight (printed two ways)",
   cat:"Rough Terrain – Tadano",
   web:1,
   out:[["Max. Extension: 22'11-5/8\" spread (center to center)","22'11-5/8\" (max. extension)"],["Mid. Extension: 21'3-7/8\" spread (center to center)","21'3-7/8\" (mid. extension)"],["Mid. Extension: 16'4-7/8\" spread (center to center)","16'4-7/8\" (mid. extension)"]],
@@ -13770,7 +13771,7 @@ const CRLIB=[{id:'ltm1045-3.1',name:'Liebherr LTM 1045-3.1',cat:'All Terrain –
   jibStow:[],
   jibErect:[]},
 {id:"tadano-tr-500xl-3",
-  name:"Tadano TR-500XL-3",
+  name:"Tadano TR-500XL-3",gap:"50 ton block and 6.2 ton ball weights",
   cat:"Rough Terrain – Tadano",
   web:1,
   out:[["Max. extension: 23'7-1/2\" spread (center to center)","23'7-1/2\" (max. extension)"],["Mid. Extension: 21'11-3/4\" spread (center to center)","21'11-3/4\" (mid. extension)"],["Mid. Extension: 18'1/2\" spread (center to center)","18'1/2\" (mid. extension)"]],
@@ -13822,7 +13823,7 @@ const CRLIB=[{id:'ltm1045-3.1',name:'Liebherr LTM 1045-3.1',cat:'All Terrain –
   jibStow:[],
   jibErect:[]},
 {id:"tadano-tr-600xl-4",
-  name:"Tadano TR-600XL-4",
+  name:"Tadano TR-600XL-4",gap:"60 ton block and 6.2 ton ball weights",
   cat:"Rough Terrain – Tadano",
   web:1,
   out:[["Max. Extension: 23'7-1/2\" spread (center to center)","23'7-1/2\" (max. extension)"],["Mid. Extension: 21'11-3/4\" spread (center to center)","21'11-3/4\" (mid. extension)"],["Mid. Extension: 18'1/2\" spread (center to center)","18'1/2\" (mid. extension)"],["Min. Extension: 9'2-1/4\" spread (center to center)","9'2-1/4\" (min. extension)"]],
@@ -13861,7 +13862,7 @@ const CRLIB=[{id:'ltm1045-3.1',name:'Liebherr LTM 1045-3.1',cat:'All Terrain –
   jibStow:[],
   jibErect:[]},
 {id:"tadano-gr-750xl-2",
-  name:"Tadano GR-750XL-2",
+  name:"Tadano GR-750XL-2",gap:"75 ton block weight (printed two ways)",
   cat:"Rough Terrain – Tadano",
   web:1,
   out:[["Max. Extension: 23'11-3/8\" spread (center to center)","23'11-3/8\" (max. extension)"],["Mid. Extension: 21'11-3/4\" spread (center to center)","21'11-3/4\" (mid. extension)"],["Mid. Extension: 18'1/2\" spread (center to center)","18'1/2\" (mid. extension)"],["Min. Extension: 8'10-1/4\" spread (center to center)","8'10-1/4\" (min. extension)"]],
@@ -13887,7 +13888,7 @@ const CRLIB=[{id:'ltm1045-3.1',name:'Liebherr LTM 1045-3.1',cat:'All Terrain –
   jibStow:[],
   jibErect:[]},
 {id:"tadano-tr-800xxl-4",
-  name:"Tadano TR-800XXL-4",
+  name:"Tadano TR-800XXL-4",gap:"50 and 60 ton block weights",
   cat:"Rough Terrain – Tadano",
   web:1,
   out:[["Max. Extension: 23'7-1/2\" spread (center to center)","23'7-1/2\" (max. extension)"],["Mid. Extension: 21'11-3/4\" spread (center to center)","21'11-3/4\" (mid. extension)"],["Mid. Extension: 18'1/2\" spread (center to center)","18'1/2\" (mid. extension)"],["Min. Extension: 9'2-1/4\" spread (center to center)","9'2-1/4\" (min. extension)"]],
@@ -13913,7 +13914,7 @@ const CRLIB=[{id:'ltm1045-3.1',name:'Liebherr LTM 1045-3.1',cat:'All Terrain –
   jibStow:[],
   jibErect:[]},
 {id:"tadano-gt-900xl-1",
-  name:"Tadano GT-900XL-1",
+  name:"Tadano GT-900XL-1",gap:"counterweight combinations printed two ways",
   cat:"Truck Crane – Tadano",
   web:1,
   out:[["Fully extended: 23'7-1/2\" spread (center to center)","23'7-1/2\" (fully extended)"],["Retract to within: 8'6\" spread (center to center)","8'6\" (retract to within)"]],
@@ -13990,7 +13991,9 @@ const CRLIB=[{id:'ltm1045-3.1',name:'Liebherr LTM 1045-3.1',cat:'All Terrain –
   jibNote:"boom extension deductions from the product guide",
   jibStow:[0,0,0,0,0],
   jibErect:[["Jib deployed erected (deduct from main boom)",[500,500,500,500,500]]]}];
-if(!TESTAPP)CRLIB.length=0; /* crane library is test-only until pushed to main */
+/* main app only gets cranes with every pick-list filled: outriggers, travel width/height, counterweights, line pull, hook blocks with weights, boom lengths, jib weights */
+const crFull=x=>{const n=v=>Array.isArray(v)&&v.length>0;return n(x.out)&&!!x.trav&&n(x.trav.w)&&n(x.trav.h)&&n(x.cwt)&&x.cwt.every(w=>w[1]>0)&&n(x.line)&&x.line.every(v=>v>0)&&n(x.blocks)&&x.blocks.every(b=>b[1]>0&&b[2]>0)&&n(x.booms)&&n(x.jibStow)&&n(x.jibErect)&&!x.gap};
+if(!TESTAPP){const k=CRLIB.filter(crFull);CRLIB.length=0;CRLIB.push(...k)}
 const libOpts=L=>{const g={};CRLIB.forEach(x=>{(g[x.cat||'Other']=g[x.cat||'Other']||[]).push(x)});return Object.keys(g).map(c=>`<optgroup label="${esc(c)}">${g[c].map(x=>`<option value="${x.id}"${L&&L.id===x.id?' selected':''}>${esc(x.name)}</option>`).join('')}</optgroup>`).join('')};
 const libOf=(v,c)=>CRLIB.find(x=>x.id===v['c'+c+'_lib'])||null;
 const pickSel=(opts,ph)=>`<select class="pick" data-cpick aria-label="${esc(ph)}"><option value="">▾ ${esc(ph)}</option>${opts.map(o=>`<option value="${esc(JSON.stringify(o[1]))}">${esc(o[0])}</option>`).join('')}</select>`;
@@ -14002,7 +14005,7 @@ function craneCard(c){
   return `<div class="card"><h2>Crane #${c}</h2>
   <div class="seg"><button type="button" data-cuse="${c}" style="color:var(--acc)">★ Use a saved configuration${crLoad().length?' ('+crLoad().length+')':''}</button><button type="button" data-csave="${c}" style="color:var(--acc)">☆ Save this setup</button></div>
   ${CRLIB.length?'':'<!--'}<div class="lab">Crane library</div><select data-lib="${c}" aria-label="Crane library"><option value="">— not from library (type everything in) —</option>${libOpts(L)}</select>${CRLIB.length?'':'-->'}
-  ${L?'<p class="note" style="margin:4px 0 0">'+(L.web?'Numbers for this crane come from the manufacturer\'s data sheet online, not your chart book. Check them against the unit. ':'')+'Pick-lists below and on the Lift calc tab come from this crane\'s chart book. You can still type your own numbers. Gross capacity is always read off the chart by you.</p>':''}
+  ${L?'<p class="note" style="margin:4px 0 0">'+'Pick-lists below and on the Lift calc tab come from this crane\'s chart book or the manufacturer\'s data sheet online. Check them against the unit. You can still type your own numbers. Gross capacity is always read off the chart by you.</p>':''}
   ${tx(p+'make','Crane Make and Model')}
   ${tx(p+'unit','Unit Number')}
   <div class="lab">CWT used</div>${L&&L.cwt.length?pickSel(L.cwt.map(w=>[fmt(w[1])+' lbs'+(w[0]!=null?' ('+w[0]+' t)':''),Object.assign(set('cwt',String(w[1])),set('cwtU','lbs'))]),'Pick counterweight'):''}
