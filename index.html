@@ -12917,8 +12917,9 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
 /******/ ])["default"];
 });</script>
 <script>
-const TESTAPP=true;const BUILD='3.45';
+const TESTAPP=true;const BUILD='3.46';
 const NOTES=[
+['3.46',['Suncor Mobile Crane SWP: Permit #, Emergency Assembly Area, Emergency Meeting Point and Emergency Phone # / Radio are back on the Crane FLRA tab and also stay on the Sign-offs tab. Both are linked – fill either one and the other matches'],1],
 ['3.45',['Suncor Mobile Crane SWP: Permit #, Emergency Assembly Area, Emergency Meeting Point and Emergency Phone # / Radio moved from the Crane FLRA tab to the top of the Sign-offs tab. The PDF and picture copies still print them in the same place on the Crane Lift FLRA page'],1],
 ['3.44',['Crane library now holds 75 cranes, grouped in the drop-down by type and make: All Terrain – Liebherr (19), All Terrain – Grove (16), Rough Terrain – Grove (15), Rough Terrain – Tadano (19), Truck Crane – Tadano (1), Carry Deck – Grove (1), Carry Deck – Broderson (2), Carry Deck – Shuttlelift (2)','New Grove, Tadano, Broderson and Shuttlelift cranes come from manufacturer data sheets found online (marked on screen) – check them against the unit; metric figures converted to ft-in rounded up, kg to lbs','Grove all terrains use 525/80 R 25 tyre widths and heights; rough terrains and carry decks use the tyre size their data sheet prints','Liebherr cranes without a chart-book parts-of-line list now show the single line pull from the Liebherr data sheet','Values printed two different ways in a data sheet were left out'],1],
 ['3.43',['Crane library: travel width and height now assume 525/80 R 25 (20.5 R 25) tyres on every crane, so each crane shows one width and one height','LTM 1250-6.1, 1300-6.1 and 11200-9.1 (and the 1500-8.1 height) have no 525 figure on the data sheet; they show the largest size printed, labelled'],1],
@@ -14584,7 +14585,8 @@ sflra:{sub:'Barnhart Crane Lift FLRA – Appendix "A" for Syncrude Canada. Must 
   {k:'fWeatherCond',l:'Weather conditions'},{k:'fWind',l:'Wind speed'},
   {k:'fLiftPlanReq',l:'Lift Plan or Engineered Drawing Required',t:'yn',sub:[{k:'fDrawingNo',l:'Drawing Number'}]},
   {k:'fPreOp',l:'Pre Operational Safety Checks Complete?',t:'yn'},{k:'fLogbook',l:'Crane Inspection Book Complete?',t:'yn'},
-  {k:'fHrsLower',l:'Crane Hours – Lower'},{k:'fHrsUpper',l:'Crane Hours – Upper'}]},
+  {k:'fHrsLower',l:'Crane Hours – Lower'},{k:'fHrsUpper',l:'Crane Hours – Upper'},
+  {k:'fPermit',l:'Permit #'},{k:'fAssembly',l:'Emergency Assembly Area'},{k:'fMeeting',l:'Emergency Meeting Point'},{k:'fEmergPhone',l:'Emergency Phone # / Radio'}]},
  {h:'Mobile Hoisting Equipment Lift Planning Checklist',yna:1,fields:[
   {k:'h1',n:'1',l:'Does the crane require relocation on site? Use Crane Movement FLRA (contact supervisor)',sub:[{k:'fDocNo',l:'Doc #'}]},
   {k:'h2',n:'2',l:'Is the signal Person(s) identified by means of hi-vis vest, gauntlet(s), etc.?',sub:[{k:'fSignalName',l:'Name'}]},
@@ -14645,7 +14647,7 @@ smove:{sub:'SCL-SH&E-142A Appendix J – Crane/Lifting Equipment Movement Checkl
   {k:'m22',n:'22.',l:'Has a pre-move meeting been held to discuss movement if this is an escorted move?'}]}]}};
 /* sign-off rosters: name is stored at <key>, signature at <key>Sig (same scheme as the company-review signatures) */
 const SYNR=[
- {h:'Permit and Emergency Information',note:'Prints on the Crane Lift FLRA page of the PDF, in the same spot as the paper form.',fields:[
+ {h:'Permit and Emergency Information',note:'Same four boxes as on the Crane FLRA tab – fill either one and both update. Prints once, on the Crane Lift FLRA page of the PDF.',fields:[
   {k:'fPermit',l:'Permit #'},{k:'fAssembly',l:'Emergency Assembly Area'},{k:'fMeeting',l:'Emergency Meeting Point'},{k:'fEmergPhone',l:'Emergency Phone # / Radio'}]},
  {p:'sL',h:'Lift Plan – Verification sign-off',note:'Endorsement required if verification section indicates lift will exceed 80% or more than one crane involved.',roles:['Checklist completed by (Crane Operator)','Relief Operator Briefed Before Handover','Lift Specialist']},
  {p:'sA',h:'Pre-Lift Briefing',note:'All fields discussed during pre-lift briefing.',roles:['Lift Director','Crane Operator 1','Signal Person 1','Rigger 1','Crane Operator 2','Signal Person 2','Rigger 2','Spotter','Lift Crew','Lift Crew','Lift-Related Personnel','Lift-Related Personnel','Lift-Related Personnel']},
