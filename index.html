@@ -122,7 +122,7 @@ table.ramt td,table.ramt th{border:2px solid #000;padding:8px 2px}
 <div class="acts"><button class="btn sec" id="cfgCancel">Cancel</button><button class="btn" id="cfgSave">Save</button></div></div></div>
 <div class="modal hide" id="libm"><div class="box" style="max-height:88vh;display:flex;flex-direction:column"><b id="libt">My saved tasks, hazards and controls</b><div id="libl" style="overflow:auto;margin:8px 0;flex:1"></div><div class="acts"><button class="btn" id="libClose">Done</button></div></div></div>
 <div id="toast" class="hide" role="status" style="position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#18181b;color:#fff;padding:10px 16px;border-radius:999px;font-size:14px;z-index:30;max-width:90vw;text-align:center"></div>
-<div class="modal hide" id="scanm"><div class="box" style="text-align:center;max-height:96vh;overflow:auto"><b>Scan a QR code to add it here</b><div style="overflow:hidden;border-radius:8px;margin:8px 0;background:#000"><video id="scanv" playsinline muted style="width:100%;max-height:52vh;display:block;object-fit:cover;transform-origin:center"></video></div><div class="seg" id="scanz" style="margin-bottom:6px"><button type="button" data-z="1">1×</button><button type="button" data-z="2">2×</button><button type="button" data-z="3">3×</button><button type="button" data-z="4">4×</button><button type="button" id="scanSw" class="hide" style="flex:2">Switch camera</button></div><div id="scanp" style="font-weight:700;margin-bottom:4px"></div><p class="note" style="margin:0 0 8px">Blurry? Move the camera further back and zoom in instead of getting closer – cameras cannot focus on something very near. If it stays blurry, try Switch camera.</p><div class="acts"><button class="btn sec" id="scanCancel">Cancel</button></div></div></div>
+<div class="modal hide" id="scanm"><div class="box" style="text-align:center;max-height:96vh;overflow:auto"><b>Scan a QR code to add it here</b><div id="scanBox" style="overflow:hidden;border-radius:8px;margin:8px 0;background:#000"><video id="scanv" playsinline muted autoplay style="width:100%;max-height:52vh;display:block;object-fit:cover;transform-origin:center"></video></div><div class="seg" id="scanz" style="margin-bottom:6px"><button type="button" data-z="1">1×</button><button type="button" data-z="2">2×</button><button type="button" data-z="3">3×</button><button type="button" data-z="4">4×</button><button type="button" id="scanSw" class="hide" style="flex:2">Switch camera</button></div><div id="scanp" style="font-weight:700;margin:6px 0 4px"></div><div id="scanHelp" class="hide"><p class="note" id="scanHelpT" style="margin:0 0 6px;text-align:left"></p><button type="button" class="btn wide" id="scanAsk" style="margin:0 0 8px">Ask for the camera again</button></div><p class="note" id="scanBlur" style="margin:0 0 8px">Blurry? Move the camera further back and zoom in instead of getting closer – cameras cannot focus on something very near. If it stays blurry, try Switch camera.</p><button type="button" class="btn sec wide" id="scanShot" style="margin:0 0 8px">Camera not working? Take a photo of the code instead</button><input type="file" id="scanFile" accept="image/*" capture="environment" class="hide"><div class="acts"><button class="btn sec" id="scanCancel">Cancel</button></div></div></div>
 <div class="modal hide" id="bnm"><div class="box" style="max-height:88vh;overflow:auto;text-align:left"><b id="bnTitle"></b><div id="bnBody" style="font-size:15px"></div><button type="button" class="btn wide" id="bnUp" style="margin-top:12px">Check for updates</button><button type="button" class="btn sec wide" id="bnX" style="margin-top:8px">Close</button></div></div>
 <div class="modal hide" id="exm"><div class="box"><b>Save a copy</b><p class="note" style="margin:4px 0 10px">Same layout as the paper form. File name: <b id="exName"></b></p><button type="button" class="btn wide" id="exPdf">PDF – save to Files or share</button><button type="button" class="btn sec wide" id="exPic" style="margin-top:8px">Picture – save to gallery / Photos</button><button type="button" class="btn sec wide" id="exX" style="margin-top:8px">Cancel</button></div></div>
 <div class="modal hide" id="qrm"><div class="box" style="text-align:center;max-height:94vh;overflow:auto"><b>Scan to get a copy</b><canvas id="qrc" width="1080" height="1080" style="width:100%;max-width:440px;height:auto;display:block;margin:8px auto;background:#fff"></canvas><p class="note" id="qrg" style="margin:4px 0">To get a PDF: scan with any phone or tablet camera (that device needs internet). To add it to this app on another device: open the app there and tap “Scan a QR code to add one”, which works with no signal. Turn the screen brightness up if it will not scan.</p><div id="qrp" style="font-weight:700"></div><p class="note" id="qrn" style="color:#b45309"></p><button type="button" class="btn sec wide hide" id="qrSw" style="margin-bottom:8px"></button><div class="acts"><button class="btn" id="qrClose">Close</button></div></div></div>
@@ -12928,8 +12928,9 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
 /******/ ])["default"];
 });</script>
 <script>
-const TESTAPP=true;const BUILD='3.51';
+const TESTAPP=true;const BUILD='3.52';
 const NOTES=[
+['3.52',['QR scanner: the camera is asked for fresh every time you open the scanner and let go when you close it','If the camera does not start, the scanner now says why and what to change, with an “Ask for the camera again” button. If an iPad blocks the camera, set Settings › Apps › Safari › Camera to Ask','New: “Take a photo of the code instead” – works when the live camera is blocked or shows nothing','The scanner now notices a camera that opened but shows no picture, froze or stopped'],0],
 ['3.51',['Site maps: every tag on the Christina Lake map was read again at a closer zoom. 314 locations now','Any tag with a digit or letter hidden, blurred or under a line on the photo is in the last group, “Check on the map – tag hard to read” (31 of them). Where there is a best reading it is still in the name, so search finds it','Added: MCC by West Pump, the east end of the 001 Rack, the north leg of the 002 Rack, two more exchanger skids on D Ave and three rack labels in FG Process and on H Ave'],1],
 ['3.50',['Site maps: the Christina Lake SAGD Muster and Control Site Map is now built into the app under Cenovus Christina Lake South – nothing to add, just open it and tap “Find a location”. It opens with no signal'],1],
 ['3.49',['Crane library removed from the main app – crane details are typed in as before','Anything already filled in from the crane library stays on your saved forms'],2],
@@ -15154,40 +15155,91 @@ $('#qrClose').onclick=()=>{clearInterval(qrT);$('#qrm').classList.add('hide')};
 $('#libClose').onclick=()=>$('#libm').classList.add('hide');
 $('#cfgCancel').onclick=()=>$('#cfgm').classList.add('hide');$('#cfgSave').onclick=cfgStore;
 $('#scanCancel').onclick=()=>stopScan();
+$('#scanAsk').onclick=()=>scanGo();
+/* the device's own camera cannot run while the live camera is held, so let go of it first */
+$('#scanShot').onclick=()=>{scanLoop++;scanGen++;clearTimeout(scanTimer);if(scanStream){scanStream.getTracks().forEach(t=>t.stop());scanStream=null}$('#scanv').srcObject=null;
+  scanHelp('Take a photo of the code.','Fill most of the picture with the code and keep it sharp. One code works best – a cycling set needs the live camera.',1);$('#scanFile').value='';$('#scanFile').click()};
+$('#scanFile').onchange=e=>{const f=e.target.files&&e.target.files[0];if(f)scanPhoto(f)};
 document.querySelectorAll('#scanz button[data-z]').forEach(b=>b.onclick=()=>{scanZoom=+b.dataset.z;scanZoomApply()});
 $('#scanSw').onclick=async()=>{if(scanCams.length<2)return;scanCam=(scanCam+1)%scanCams.length;$('#scanp').textContent='Camera '+(scanCam+1)+' of '+scanCams.length;await scanOpenCam()};
 let shared=null;
 function sigHydrate(o){(o.v.crew||[]).forEach(c=>{if(!c)return;if(c.sp)c.sig=sigDraw(c.sp);else if(c.sb){c.sig=sigFromBits(c.sb);delete c.sb}});SIGK(o.v).forEach(k=>{if(o.v[k+'Sp'])o.v[k+'Sig']=sigDraw(o.v[k+'Sp']);else if(o.v[k+'Sb']){o.v[k+'Sig']=sigFromBits(o.v[k+'Sb']);delete o.v[k+'Sb']}})}
 function decodeShare(p){const o=qunpack(p);if(o&&o.all)return {all:o};if(!o||!o.v)throw 0;sigHydrate(o);const r={v:o.v};if(o.t==='calc'||XF[o.t])r.t=o.t;return r}
-/* in-app scanner: reads the same QR code and adds the FLRA or lift calc to this device */
+/* in-app scanner: reads the same QR code and adds the FLRA or lift calc to this device.
+   The camera is asked for fresh every time the scanner opens and let go when it closes, so the device decides each time whether to ask.
+   A web app cannot make the device show its own permission box: if the device has the camera set to Deny for websites, asking fails at once.
+   So a failure is explained on screen, and a photo of the code (the device's own camera screen) works without the live camera. */
 let scanStream=null,scanTimer=0,scanBusy=false;
-let scanZoom=2,scanCams=[],scanCam=-1,scanNative=false,scanGen=0;
+let scanZoom=2,scanCams=[],scanCam=-1,scanNative=false,scanGen=0,scanLoop=0,scanSeen=0;
+const SCANHINT='Hold the camera about a forearm away from the code and keep it steady.';
+const isApple=()=>/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 function scanZoomApply(){const vd=$('#scanv'),tr=scanStream&&scanStream.getVideoTracks()[0];scanNative=false;
   try{const caps=tr&&tr.getCapabilities?tr.getCapabilities():null;if(caps&&caps.zoom&&caps.zoom.max>1){const z=Math.max(caps.zoom.min||1,Math.min(caps.zoom.max,scanZoom));tr.applyConstraints({advanced:[{zoom:z}]}).catch(()=>{});scanNative=true}}catch(e){}
   vd.style.transform=scanNative?'none':'scale('+scanZoom+')';
   document.querySelectorAll('#scanz button[data-z]').forEach(b=>b.classList.toggle('on',+b.dataset.z===scanZoom))}
+/* show (head given) or clear the "camera is not working" help. noVideo also hides the black camera box */
+function scanHelp(head,body,noVideo){const on=!!head;$('#scanHelp').classList.toggle('hide',!on);$('#scanBlur').classList.toggle('hide',on);
+  $('#scanBox').classList.toggle('hide',on&&!!noVideo);$('#scanz').classList.toggle('hide',on&&!!noVideo);
+  if(on){$('#scanp').textContent=head;$('#scanHelpT').textContent=body||''}}
+/* why the camera did not start, in plain words, and what to do about it */
+function scanWhy(e){const n=e&&e.name||'';
+  if(n==='NotAllowedError'||n==='SecurityError'||n==='PermissionDeniedError')return ['The camera is blocked for this app.',isApple()?'This iPad or iPhone refused the camera. If no box asked you, open Settings › Apps › Safari › Camera (older versions: Settings › Safari › Camera) and choose Ask. Then close this app fully and open it again – it will ask to use the camera when you scan.':'The device or browser refused the camera. Allow the camera for this app in the browser or device settings, then tap “Ask for the camera again”.'];
+  if(n==='NotFoundError'||n==='DevicesNotFoundError'||n==='OverconstrainedError')return ['No camera was found on this device.','Take a photo of the code instead, if this device can.'];
+  if(n==='NotReadableError'||n==='TrackStartError'||n==='AbortError')return ['The camera is busy or did not start.','Close anything else that is using the camera, then tap “Ask for the camera again”.'];
+  return ['The camera did not start'+(n?' ('+n+')':'')+'.','Tap “Ask for the camera again”, or take a photo of the code instead.']}
 async function scanOpenCam(){const my=++scanGen;if(scanStream){scanStream.getTracks().forEach(t=>t.stop());scanStream=null}
   const base={width:{ideal:1920},height:{ideal:1080}},vc=scanCam>=0&&scanCams[scanCam]?Object.assign({deviceId:{exact:scanCams[scanCam].deviceId}},base):Object.assign({facingMode:{ideal:'environment'}},base);
-  let stm;try{stm=await navigator.mediaDevices.getUserMedia({video:vc,audio:false})}catch(e){$('#scanp').textContent='Camera not available. Allow camera access for this app in the device settings, then try again.';return false}
+  let stm;try{stm=await navigator.mediaDevices.getUserMedia({video:vc,audio:false})}catch(e){if(my===scanGen){const w=scanWhy(e);scanHelp(w[0],w[1],1)}return false}
   if(my!==scanGen){stm.getTracks().forEach(t=>t.stop());return false}
-  scanStream=stm;const tr=stm.getVideoTracks()[0];
+  scanStream=stm;scanSeen=Date.now();scanHelp();const tr=stm.getVideoTracks()[0];
   try{const caps=tr.getCapabilities?tr.getCapabilities():null;if(caps&&caps.focusMode&&caps.focusMode.indexOf('continuous')>=0)await tr.applyConstraints({advanced:[{focusMode:'continuous'}]})}catch(e){}
   const vd=$('#scanv');vd.srcObject=stm;try{await vd.play()}catch(e){}
   try{const all=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==='videoinput');const back=all.filter(d=>/back|rear|environment/i.test(d.label));scanCams=back.length>1?back:all;
     if(scanCam<0){const id=tr.getSettings&&tr.getSettings().deviceId;scanCam=Math.max(0,scanCams.findIndex(d=>d.deviceId===id))}}catch(e){scanCams=[]}
   $('#scanSw').classList.toggle('hide',scanCams.length<2);scanZoomApply();return true}
-async function startScan(){scanBusy=false;scanParts={};scanPid=null;scanCam=-1;$('#scanp').textContent='Hold the camera about a forearm away from the code and keep it steady.';$('#scanm').classList.remove('hide');
-  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){$('#scanp').textContent='This device cannot use the camera from here.';return}
-  if(!await scanOpenCam())return;
+function startScan(){scanBusy=false;scanParts={};scanPid=null;scanCam=-1;$('#scanm').classList.remove('hide');scanGo()}
+/* ask for the camera and start reading. Runs each time the scanner opens, and again from “Ask for the camera again” */
+async function scanGo(){const lp=++scanLoop;clearTimeout(scanTimer);scanBusy=false;scanHelp();$('#scanAsk').classList.remove('hide');$('#scanp').textContent='Asking for the camera…';
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){scanHelp('This browser cannot use the live camera here.',(isApple()?'Open the app in Safari, or take':'Take')+' a photo of the code instead.',1);$('#scanAsk').classList.add('hide');return}
+  if(!await scanOpenCam()||lp!==scanLoop)return;
+  $('#scanp').textContent=SCANHINT;
   const vd=$('#scanv');let det=null;try{if('BarcodeDetector' in window)det=new BarcodeDetector({formats:['qr_code']})}catch(e){}
-  const cv=document.createElement('canvas'),cx=cv.getContext('2d',{willReadFrequently:true});
-  const tick=async()=>{if(!scanStream||scanBusy){if(!scanBusy&&!$('#scanm').classList.contains('hide'))scanTimer=setTimeout(tick,200);return}
-    if(vd.videoWidth){try{let txt=null;
-      if(det){const r=await det.detect(vd);if(r&&r[0])txt=r[0].rawValue}
-      if(!txt){const full=Math.min(vd.videoWidth,vd.videoHeight),side=scanNative?full:Math.max(240,Math.round(full/scanZoom)),out=Math.min(Math.max(side,700),1100);cv.width=out;cv.height=out;cx.imageSmoothingEnabled=true;cx.drawImage(vd,(vd.videoWidth-side)/2,(vd.videoHeight-side)/2,side,side,0,0,out,out);const r=jsQR(cx.getImageData(0,0,out,out).data,out,out,{inversionAttempts:'dontInvert'});if(r&&r.data)txt=r.data}
+  const cv=document.createElement('canvas'),cx=cv.getContext('2d',{willReadFrequently:true});let sum=null,stuck=false;
+  const tick=async()=>{if(lp!==scanLoop)return;
+    if(!scanStream||scanBusy){if(!scanBusy&&!$('#scanm').classList.contains('hide'))scanTimer=setTimeout(tick,200);return}
+    const tr=scanStream.getVideoTracks()[0],dead=!tr||tr.readyState==='ended';
+    if(vd.videoWidth&&!dead){try{let txt=null;
+      if(det){try{const r=await det.detect(vd);if(r&&r[0])txt=r[0].rawValue}catch(e){det=null}}
+      if(txt)scanSeen=Date.now();
+      else{const full=Math.min(vd.videoWidth,vd.videoHeight),side=scanNative?full:Math.max(240,Math.round(full/scanZoom)),out=Math.min(Math.max(side,700),1100);cv.width=out;cv.height=out;cx.imageSmoothingEnabled=true;cx.drawImage(vd,(vd.videoWidth-side)/2,(vd.videoHeight-side)/2,side,side,0,0,out,out);
+        const px=cx.getImageData(0,0,out,out).data;let c=0;for(let k=0;k<px.length;k+=1013)c=(c*31+px[k])|0;if(c!==sum){sum=c;scanSeen=Date.now()}
+        const r=jsQR(px,out,out,{inversionAttempts:'dontInvert'});if(r&&r.data)txt=r.data}
       if(txt)scanText(txt)}catch(e){}}
-    scanTimer=setTimeout(tick,140)};clearTimeout(scanTimer);tick()}
-function stopScan(){scanGen++;if(scanStream){scanStream.getTracks().forEach(t=>t.stop());scanStream=null}clearTimeout(scanTimer);$('#scanv').srcObject=null;$('#scanm').classList.add('hide')}
+    if(lp!==scanLoop||scanBusy)return;
+    /* a camera that opened but shows nothing, froze, or was taken away – some iPads and iPhones do this in a home-screen app */
+    const late=dead||Date.now()-scanSeen>5000;
+    if(late&&!stuck){stuck=true;scanHelp(dead?'The camera stopped.':'The camera opened but no picture is coming through.','Tap “Ask for the camera again”. If it still shows nothing, take a photo of the code instead.')}
+    else if(!late&&stuck){stuck=false;scanHelp();$('#scanp').textContent=SCANHINT}
+    scanTimer=setTimeout(tick,140)};tick()}
+/* read a code from a photo – for when the live camera is blocked or shows nothing. Uses the device's own camera screen, not the live camera */
+async function scanPhoto(file){const say=(h,b)=>scanHelp(h,b||'',1);say('Reading the photo…');
+  let img;try{img=await new Promise((ok,no)=>{const u=URL.createObjectURL(file),im=new Image();im.onload=()=>{URL.revokeObjectURL(u);ok(im)};im.onerror=()=>{URL.revokeObjectURL(u);no()};im.src=u})}catch(e){say('That photo could not be opened.','Take the photo again.');return}
+  const W=img.naturalWidth,H=img.naturalHeight;let txt=null;
+  try{if('BarcodeDetector' in window){const r=await new BarcodeDetector({formats:['qr_code']}).detect(img);if(r&&r[0])txt=r[0].rawValue}}catch(e){}
+  /* the whole photo first, then the middle of it, at a few sizes – so a code that fills the picture and one that sits small in it both get a fair try */
+  const cv=document.createElement('canvas'),cx=cv.getContext('2d',{willReadFrequently:true});
+  for(const t of [[1,1400],[1,2200],[.6,1400],[.4,1200],[1,800]]){if(txt)break;
+    const sw=W*t[0],sh=H*t[0],k=Math.min(1,t[1]/Math.max(sw,sh)),w=Math.max(1,Math.round(sw*k)),h=Math.max(1,Math.round(sh*k));
+    cv.width=w;cv.height=h;cx.drawImage(img,(W-sw)/2,(H-sh)/2,sw,sh,0,0,w,h);
+    try{const r=jsQR(cx.getImageData(0,0,w,h).data,w,h,{inversionAttempts:'attemptBoth'});if(r&&r.data)txt=r.data}catch(e){}
+    await new Promise(r=>setTimeout(r,0))}
+  if($('#scanm').classList.contains('hide'))return;
+  if(!txt){say('No QR code found in that photo.','Fill most of the picture with the code, keep it sharp and avoid glare, then take it again.');return}
+  const pm=/[#&]p=\w+\.\d+\.(\d+)\./.exec(txt);
+  if(scanText(txt))return;
+  if(pm&&+pm[1]>1)say('That code is one of a cycling set of '+pm[1]+' ('+Object.keys(scanParts).length+' collected).','A photo only catches one code of a set. Use the live camera for a set, or on the other device tap “One code without signatures (for a phone camera)” and take the photo again.');
+  else say($('#scanp').textContent,'Take the photo again.')}
+function stopScan(){scanGen++;scanLoop++;if(scanStream){scanStream.getTracks().forEach(t=>t.stop());scanStream=null}clearTimeout(scanTimer);$('#scanv').srcObject=null;$('#scanm').classList.add('hide')}
 let scanParts={},scanPid=null;
 function scanText(t){if(scanBusy)return false;let m=/[#&]f=([\w\-]+)/.exec(String(t));
   const pm=/[#&]p=(\w+)\.(\d+)\.(\d+)\.([\w\-]+)/.exec(String(t));
