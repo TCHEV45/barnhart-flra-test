@@ -79,6 +79,8 @@ button.blk.on{border-color:var(--ok);background:#f0fdf4;font-weight:600}
 .banner.red{background:#fee2e2;border-color:#dc2626;font-weight:700}
 .hide{display:none!important}
 .qt{font-size:15px;margin-bottom:6px}
+.card.qb,.card:has(.qsep){border:2px solid #000}
+.qsep{border-top:2px solid #000}
 .hzh{display:flex;justify-content:space-between;align-items:center}
 .hzi{border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:8px;padding:8px 10px;margin:8px 0;background:#fafafa}
 select.ram{font-weight:700;max-width:240px;-webkit-appearance:none;appearance:none;padding-right:30px;background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);background-position:calc(100% - 16px) 50%,calc(100% - 11px) 50%;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
@@ -14034,7 +14036,7 @@ job:()=>`<div class="card"><h2>Job</h2>
 
 check:()=>{const done=Q.filter(q=>cur.v['q'+q[0]]).length;
   return `<p class="note"><b>Mobile Hoisting Equipment Lift Planning Checklist</b> – ${done} of ${Q.length} answered</p>`+Q.map(([i,t,o={}])=>{const k='q'+i,a=cur.v[k];
-  return `<div class="card"><div class="qt"><b>${i}.</b> ${esc(t)}</div>
+  return `<div class="card qb"><div class="qt"><b>${i}.</b> ${esc(t)}</div>
   <div class="seg" data-seg="${k}">${(o.noNA?YN:YNA).map(x=>`<button type="button" data-v="${x}" class="${a===x?'on':''}${x!=='Yes'?' no':''}">${x}</button>`).join('')}</div>
   ${o.sup&&a==='Yes'?'<div class="banner red">YES – contact Supervisor.</div>':''}${i===26&&a==='No'?'<div class="banner red">NO – must be authorized. Enter who authorized it.</div>':''}
   ${SO.includes(i)?`<p class="note" style="margin:0">${i===11?'Name and company':'Name, signature and phone or radio channel'} go on the Sign-off tab.</p>`:`${o.name?tx(k+'_name',o.name):''}${o.x?seg(k+'_x',o.x[0],o.x[1]):''}
@@ -14694,7 +14696,7 @@ function synF(f,yna){return (f&&f.k?synPick(f.k):'')+synF0(f,yna)}
 function synF0(f,yna){
   if(f.h3)return `<div class="lab" style="margin-top:14px;font-weight:700;color:var(--acc);text-transform:uppercase">${esc(f.h3)}</div>`;
   const k=f.k,t=f.t||(yna?'yna':'text'),sub=f.sub?`<div style="margin:0 0 4px 10px;padding-left:10px;border-left:3px solid var(--line)">${f.sub.map(x=>synF(x)).join('')}</div>`:'';
-  if(t==='yn'||t==='yna')return `<div style="padding:8px 0;border-top:1px solid #eee"><div class="qt">${f.n?`<b>${f.n}</b> `:''}${esc(f.l)}</div><div class="seg" data-seg="${k}">${(f.o||(t==='yn'?YN:YNA)).map(x=>`<button type="button" data-v="${x}" class="${cur.v[k]===x?'on':''}${x!=='Yes'?' no':''}">${x}</button>`).join('')}</div>${sub}</div>`;
+  if(t==='yn'||t==='yna')return `<div class="qsep" style="padding:8px 0"><div class="qt">${f.n?`<b>${f.n}</b> `:''}${esc(f.l)}</div><div class="seg" data-seg="${k}">${(f.o||(t==='yn'?YN:YNA)).map(x=>`<button type="button" data-v="${x}" class="${cur.v[k]===x?'on':''}${x!=='Yes'?' no':''}">${x}</button>`).join('')}</div>${sub}</div>`;
   if(t==='num')return `<label class="num"><span>${esc(f.l)}${f.u?' ('+f.u+')':''}</span><input type="text" inputmode="decimal" data-k="${k}" value="${val(k)}" autocomplete="off"></label>`;
   if(t==='out')return `<div class="num"><span>${esc(f.l)}</span><b id="${f.id}" style="text-align:right;padding-right:10px">—</b></div>`;
   if(t==='total')return `<div class="total"><span>TOTAL LIFT WEIGHT (incl. contingencies)</span><b id="synTot">—</b></div>`;
