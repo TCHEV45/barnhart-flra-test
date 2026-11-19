@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <!--
   Crane FLRA App (Barnhart Crane Lift FLRA, Lift Calc, Suncor Mobile Crane SWP, Barnhart On Site Crane Movement FLRA)
-  Copyright (c) 2026 Tristan Price. All rights reserved.
+  Copyright (c) 2026. All rights reserved.
   This software and its source code may not be copied, modified, redistributed, sold or published
-  without the written permission of Tristan Price.
+  without the written permission of its author.
   Barnhart, Suncor and Syncrude names, logos and form layouts are the property of their respective owners.
 -->
 <html lang="en">
@@ -14265,7 +14265,7 @@ function render(keep){
     ${shown.slice().sort((a,b)=>b.updated-a.updated).map(f=>{const sn=isSyn(f),p=sn?XF[f.t].pct(f.v):maxPct(f.v);return `<div class="card item"><div class="meta"><b>${esc(sn?synLab(f):(f.v.job||f.v.c1_make||(isCalc(f)?'Untitled lift calc':'Untitled FLRA')))}</b><small>${esc(f.v.date||'')}${f.v.loc?' · '+esc(f.v.loc):''}${isFinite(p)?' · '+fmt(p,1)+'%':''}</small></div><button data-open="${f.id}">Open</button><button data-dup="${f.id}">Duplicate</button><button data-pdf="${f.id}">PDF</button><button data-qr="${f.id}">QR</button><button class="del" data-del="${f.id}" aria-label="Delete">✕</button></div>`}).join('')}
     <p class="note">FLRAs and lift calcs are stored on this device only. Use PDF to save or share a completed FLRA, or QR to let another phone or tablet scan it – for a PDF copy, or to add it to the app on that device and keep working on it. Duplicate starts a new FLRA from an old one with today's date; signatures, initials, break reviews and job completion are cleared, so re-check every answer for the new job. On iPhone / iPad: Share → Add to Home Screen to install.</p>
     <p class="note">Fillable version of the Crane Lift Field Level Risk Assessment, HSE001D (01/25) Rev.16. The lift calculation is an aid – always confirm against the crane's load chart and LMI.</p>
-    <p class="note" style="font-weight:600">App © 2026 Tristan Price. All rights reserved. No copying, redistributing or reselling the app or its code without written permission. Barnhart, Suncor and Syncrude names, logos and form layouts belong to their owners.</p>
+    <p class="note" style="font-weight:600">App © 2026. All rights reserved. No copying, redistributing or reselling the app or its code without written permission. Barnhart, Suncor and Syncrude names, logos and form layouts belong to their owners.</p>
     <div class="card"><h2>Copy everything to another device</h2>
     <label class="f" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" id="caR" checked style="width:22px;height:22px"> <span style="font-size:15px;color:var(--ink);margin:0">FLRAs and lift calcs (${list.length})</span></label>
     <label class="f" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" id="caH" checked style="width:22px;height:22px"> <span style="font-size:15px;color:var(--ink);margin:0">My saved hazards (${libLoad().length})</span></label>
