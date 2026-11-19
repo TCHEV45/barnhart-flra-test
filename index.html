@@ -14171,7 +14171,7 @@ function linkPush(){try{const p=linkPartner(cur);if(!p)return;const fl=isFlra(cu
 function linkUn(f){const p=linkPartner(f);if(p){delete p.v.lnkFlra;delete p.v.lnkMov}delete f.v.lnkFlra;delete f.v.lnkMov}
 function linkMake(fl,mv){[fl,mv].forEach(linkUn);fl.v.lnkMov=mv.id;mv.v.lnkFlra=fl.id;
   LNK.forEach(([kf,km])=>{const x=fl.v[kf],y=mv.v[km];if(x!=null&&x!=='')mv.v[km]=x;else if(y!=null&&y!=='')fl.v[kf]=y});fl.updated=mv.updated=Date.now()}
-const LNKNOTE='Shared details – date, prepared by, client, work location, job number, crane make/model and library pick, unit #, operator and permit # – fill both forms, so type them once.';
+const LNKNOTE='Shared details – date, prepared by, client, work location, job number, crane make/model'+(CRLIB.length?' and library pick':'')+', unit #, operator and permit # – fill both forms, so type them once.';
 function linkCard(){if(!cur)return '';const p=linkPartner(cur);
   if(isFlra(cur)){if(p)return `<div class="card"><h2>Linked crane movement</h2><p class="note" style="margin-top:0"><b>${esc(XF.mov.lab(p.v))}</b>${p.v.date?' – '+esc(p.v.date):''}<br>${LNKNOTE} The PDF and picture copies of this FLRA include the crane movement pages.</p><div class="row"><button type="button" class="btn sec" data-lgo="${p.id}">Open crane movement</button><button type="button" class="btn sec" data-lun="1">Unlink</button></div></div>`;
     const free=list.filter(x=>isMov(x)&&!linkPartner(x)).sort((a,b)=>b.updated-a.updated);
