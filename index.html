@@ -12928,8 +12928,10 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
 /******/ ])["default"];
 });</script>
 <script>
-const TESTAPP=true;const BUILD='3.59';
+const TESTAPP=true;const BUILD='3.60';
 const NOTES=[
+['3.60',['Sync now runs every 2 minutes while the app is open, when you open the app, and whenever you tap Sync now'],0],
+['3.60',['Test app: a 6-digit access code is needed to open it. The master code unlocks a device for good and can make 24-hour access codes for other people'],1],
 ['3.59',['Sync is only a pass-through now: when the last linked device stops syncing, your copy is removed from the sync service and everything stays saved on the device','“Stop syncing and clear this device” will not run on the only linked device, so nothing can be wiped for good by mistake']],
 ['3.58',['Sync between devices is now in the main app as well as the test app','Main app: the Christina Lake SAGD site map with its location finder is now built in under Site maps']],
 ['3.57',['Sync: new “Stop syncing and clear this device” for shared tablets – it syncs first, then removes your FLRAs, lift calcs, saved hazards and crane configurations from that device only. It will not clear if it cannot sync']],
@@ -15387,7 +15389,7 @@ const syOpen=id=>!!(cur&&cur.id===id&&view!=='home');
 function syDirty(){if(!syS)return false;const L={};for(const f of list){L[f.id]=1;if((f.updated||1)!==syS.seen[f.id])return true}for(const id in syS.seen)if(!L[id])return true;
   for(const [id,get] of SYLIBS)if(syHash(JSON.stringify(get()))!==syS.lh[id]&&!(syS.lh[id]===undefined&&!get().length))return true;return false}
 const syAgo=t=>{const s=Math.max(0,Math.round((Date.now()-t)/1000));return s<50?'just now':s<3000?Math.round(s/60)+' min ago':s<80000?Math.round(s/3600)+' h ago':Math.round(s/86400)+' d ago'};
-function syStat(m){if(m!==undefined)syMsg=m;const e=$('#syStatT');if(!e)return;e.textContent=syMsg||(syErr?syErr:(syS&&syS.at?'In sync · checked '+syAgo(syS.at):'Not synced yet'));e.style.color=syErr&&!syMsg?'var(--bad,#b91c1c)':''}
+function syStat(m){if(m!==undefined)syMsg=m;const e=$('#syStatT');if(!e)return;e.textContent=syMsg||(syErr?syErr:(syS&&syS.at?(syDirty()?'Changes waiting – they go at the next sync (every 2 minutes) or tap Sync now':'In sync · checked '+syAgo(syS.at)):'Not synced yet'));e.style.color=syErr&&!syMsg?'var(--bad,#b91c1c)':''}
 async function syncNow(force){if(!SYNCON||!syS||syBusy)return;if(navigator.onLine===false){syErr='Offline – it will sync when there is signal';syStat('');return}
   syBusy=true;syStat('Syncing…');let changed=false,pushed=false,skipped=0;
   try{if(!syKey)await syInit();clearTimeout(st);sySaveList0();
@@ -15419,9 +15421,9 @@ async function syncNow(force){if(!SYNCON||!syS||syBusy)return;if(navigator.onLin
       if(changed)sySaveList0()}
     syS.at=Date.now();syErr=skipped?skipped+' item'+(skipped>1?'s':'')+' could not be synced (too large or unreadable)':'';sySave();
   }catch(e){syErr=/Failed to fetch|NetworkError|Load failed/i.test(String(e&&e.message))?'No connection to the sync service – it will try again':'Sync problem ('+(e&&e.message||e)+') – it will try again'}
-  syBusy=false;syStat('');if(changed&&view==='home')render();if(syS&&!syErr&&syDirty()){clearTimeout(syT);syT=setTimeout(()=>syncNow(),4000)}}
+  syBusy=false;syStat('');if(changed&&view==='home')render()}
 /* run a sync a few seconds after anything is saved */
-const sySaveList0=saveList;saveList=function(){const r=sySaveList0();if(SYNCON&&syS&&!syBusy){clearTimeout(syT);syT=setTimeout(()=>syncNow(),4000)}return r};
+const sySaveList0=saveList;saveList=function(){const r=sySaveList0();if(SYNCON&&syS&&!syBusy)syStat();return r};
 function syCode(){return location.origin+location.pathname.replace(/index\.html$/,'')+'#sync='+syS.s}
 async function syJoin(s,ask){if(!SYNCON)return;if(!/^[\w\-]{43}$/.test(s)){alert('That is not a pairing code from this app.');return}
   if(syS&&syS.s===s){toast('This device is already linked with that code');return}
@@ -15445,7 +15447,7 @@ function syShow(){if(!syS)return;let m=$('#sym');if(!m){m=document.createElement
   $('#syTxt').textContent=syS.s;try{const q=qrMake(syCode()),c=$('#syQr'),n=q.getModuleCount(),x=c.getContext('2d'),g=3,z=Math.floor(c.width/(n+2*g)),o=Math.floor((c.width-z*n)/2);x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.fillStyle='#000';for(let r=0;r<n;r++)for(let k=0;k<n;k++)if(q.isDark(r,k))x.fillRect(o+k*z,o+r*z,z,z)}catch(e){}
   m.classList.remove('hide')}
 function syCard(){if(!SYNCON||view!=='home'||homeTab==='maps')return;const m=$('#main');if(!m||$('#syCard'))return;const d=document.createElement('div');d.className='card';d.id='syCard';
-  d.innerHTML='<h2>Sync between my devices</h2>'+(syS?'<div id="syStatT" style="font-weight:600;margin:4px 0 8px"></div><button class="btn wide" id="syNow">Sync now</button><button class="btn sec wide" id="syAdd" style="margin-top:8px">▦ Add another device – show the pairing code</button><button class="btn sec wide" id="syOff" style="margin-top:8px">Stop syncing – keep everything on this device</button><button class="btn sec wide" id="syWipe" style="margin-top:8px;color:#b91c1c;border-color:#b91c1c">Stop syncing and clear this device (shared tablet)</button><p class="note">FLRAs, lift calcs, saved hazards and saved crane configurations are kept the same on every linked device. It syncs on its own when there is signal. The sync service only holds a copy while a device is linked – when the last linked device stops syncing, that copy is removed and everything stays on the device. Site map pictures you add yourself stay on the device they were added on.</p>'
+  d.innerHTML='<h2>Sync between my devices</h2>'+(syS?'<div id="syStatT" style="font-weight:600;margin:4px 0 8px"></div><button class="btn wide" id="syNow">Sync now</button><button class="btn sec wide" id="syAdd" style="margin-top:8px">▦ Add another device – show the pairing code</button><button class="btn sec wide" id="syOff" style="margin-top:8px">Stop syncing – keep everything on this device</button><button class="btn sec wide" id="syWipe" style="margin-top:8px;color:#b91c1c;border-color:#b91c1c">Stop syncing and clear this device (shared tablet)</button><p class="note">FLRAs, lift calcs, saved hazards and saved crane configurations are kept the same on every linked device. It syncs on its own every 2 minutes while the app is open and there is signal, and whenever you tap Sync now. The sync service only holds a copy while a device is linked – when the last linked device stops syncing, that copy is removed and everything stays on the device. Site map pictures you add yourself stay on the device they were added on.</p>'
     :'<p class="note" style="margin-top:0">Keep your FLRAs, lift calcs, saved hazards and saved crane configurations the same on your phone, tablet and laptop. No sign-in – devices are linked once with a pairing code.</p><button class="btn wide" id="syNew">Start syncing on this device</button><button class="btn sec wide" id="syScan" style="margin-top:8px">▦ Join – scan the pairing code from another device</button><button class="btn sec wide" id="syType" style="margin-top:8px">Join – type the pairing code</button>');
   const ca=$('#caBtn'),before=ca&&ca.closest('.card');if(before)m.insertBefore(d,before);else m.appendChild(d);
   if(syS){$('#syNow').onclick=()=>syncNow(true);$('#syAdd').onclick=syShow;$('#syOff').onclick=syStop;$('#syWipe').onclick=syWipe;syStat()}
@@ -15454,11 +15456,55 @@ const syRender0=render;render=function(k){syRender0(k);try{syCard()}catch(e){}};
 function syBoot(){if(!SYNCON)return;syS=syLoad();const h=/[#&]sync=([\w\-]{43})(?![\w\-])/.exec(location.hash);
   if(h){try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}setTimeout(()=>syJoin(h[1],true),300)}
   render();setTimeout(()=>syByeRun().then(()=>{if(syS)syncNow()}),1200);
-  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')syncNow()});addEventListener('online',()=>syByeRun().then(()=>syncNow()));
-  setInterval(()=>{if(document.visibilityState==='visible'){if(syS)syncNow();else syStat()}},30000)}
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')syncNow();else if(syS&&syDirty())syncNow()});addEventListener('online',()=>syByeRun().then(()=>syncNow()));
+  setInterval(()=>{if(document.visibilityState==='visible'&&syS)syncNow()},120000);setInterval(()=>syStat(),30000)}
+
+/* ---------- access code for the test app ----------
+   A 6-digit code is needed to open the test app. The master code unlocks for good and can make 24-hour codes.
+   This is a keep-out sign, not strong security: the app's files are public, so it stops casual use only. */
+const GATEON=TESTAPP&&(/\.pricedev\.ca$/.test(location.hostname)||(/^(localhost|127\.0\.0\.1)$/.test(location.hostname)&&/[?&]gate=1/.test(location.search)));
+const GK='flra.gate.v1',GS1='23bb1264ee6671ee',GS2='c91705c51adfde78',GVH='e9e933af3e2cf8bf2d2193ae53466c42a0418e85cb430ff1cbe6f84511b48ea0',GIT=300000,GAB=SYB.replace(/\/documents$/,'/documents')+'/access';
+let gSt=null,gBad=0,gWait=0;
+function gLoad(){try{return JSON.parse(localStorage.getItem(GK))||null}catch(e){return null}}
+function gSave(){try{if(gSt)localStorage.setItem(GK,JSON.stringify(gSt));else localStorage.removeItem(GK)}catch(e){}}
+const gOpen=()=>!GATEON||!!(gSt&&(gSt.m||(gSt.e&&gSt.e>Date.now())));
+const gUnhex=h=>Uint8Array.from(h.match(/../g),x=>parseInt(x,16));
+async function gPb(code,salt){const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(code),'PBKDF2',false,['deriveBits']);return syHex(await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt:gUnhex(salt),iterations:GIT},k,256))}
+const gSha=async t=>syHex(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t)));
+function gWhen(t){const d=new Date(t);return d.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})+' '+d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'})}
+function gShow(msg){let g=$('#gate');if(!g){g=document.createElement('div');g.id='gate';g.style.cssText='position:fixed;inset:0;z-index:99;background:var(--acc);color:#fff;display:flex;align-items:center;justify-content:center;padding:20px';
+    g.innerHTML='<div style="width:100%;max-width:340px;text-align:center"><div style="font-size:20px;font-weight:700;margin-bottom:6px">FLRA test app</div><div id="gMsg" style="font-size:15px;margin-bottom:14px;min-height:40px"></div><input id="gIn" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" aria-label="6-digit access code" style="width:100%;font-size:30px;letter-spacing:10px;text-align:center;padding:12px 6px;border-radius:12px;border:0;color:#111"><button type="button" id="gGo" style="width:100%;margin-top:12px;padding:14px;font-size:17px;font-weight:700;border-radius:12px;border:2px solid #fff;background:transparent;color:#fff;font-family:inherit">Unlock</button></div>';
+    document.body.appendChild(g);g.querySelector('#gGo').onclick=gTry;g.querySelector('#gIn').addEventListener('keydown',e=>{if(e.key==='Enter')gTry()});g.querySelector('#gIn').addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,6);if(e.target.value.length===6)gTry()})}
+  $('#gMsg').textContent=msg||'Enter the 6-digit access code.';g.style.display='flex';document.documentElement.style.overflow='hidden'}
+function gHide(){const g=$('#gate');if(g)g.style.display='none';document.documentElement.style.overflow=''}
+async function gTry(){const i=$('#gIn'),c=i.value;if(!/^\d{6}$/.test(c)||i.disabled)return;const left=gWait-Date.now();if(left>0){$('#gMsg').textContent='Too many wrong codes. Wait '+Math.ceil(left/1000)+' seconds.';return}
+  i.disabled=true;$('#gMsg').textContent='Checking…';let ok=false,why='That code is not right.';
+  try{if(await gPb(c,GS1)===GVH){gSt={m:1,t:await gPb(c,GS2)};ok=true}
+    else{const r=await fetch(GAB+'/'+await gSha('acc|'+c),{cache:'no-store'});
+      if(r.ok){const f=(await r.json()).fields||{},e=+((f.e&&f.e.integerValue)||0);if(e>Date.now()){gSt={e};ok=true}else why='That code has expired.'}
+      else if(r.status!==404&&r.status!==403)why='Could not check the code ('+r.status+'). Try again.'}
+  }catch(e){why=navigator.onLine===false?'No signal. A 24-hour code needs signal the first time it is entered.':'Could not check the code. Check your signal and try again.'}
+  i.disabled=false;i.value='';
+  if(ok){gBad=0;gSave();gHide();render();toast(gSt.m?'Unlocked':'Unlocked until '+gWhen(gSt.e),3500)}
+  else{if(/not right/.test(why)&&++gBad>=5){gWait=Date.now()+30000;gBad=0;why='Too many wrong codes. Wait 30 seconds.'}$('#gMsg').textContent=why;i.focus()}}
+function gCheck(){if(!GATEON)return;if(gOpen())gHide();else{if(gSt&&gSt.e){gSt=null;gSave();gShow('Your 24-hour access has ended. Enter a new code.')}else gShow()}}
+async function gMake(){if(!gSt||!gSt.m)return;if(navigator.onLine===false){alert('No signal. Making a 24-hour code needs signal.');return}
+  const b=$('#gNew');if(b)b.disabled=true;try{for(let n=0;n<4;n++){const code=String(crypto.getRandomValues(new Uint32Array(1))[0]%1000000).padStart(6,'0');if(await gPb(code,GS1)===GVH)continue;
+      const id=await gSha('acc|'+code),e=Date.now()+24*3600000,k=await gSha(gSt.t+id);
+      const r=await fetch(GAB+'?documentId='+id,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields:{e:{integerValue:String(e)},k:{stringValue:k}}})});
+      if(r.status===409)continue;if(!r.ok)throw new Error(r.status===403?'the database is not set up for access codes yet':'error '+r.status);
+      gSt.last={c:code,e};gSave();render();toast('24-hour code made',2500);return}
+    throw new Error('could not make a code, try again')}catch(e){alert('Could not make a 24-hour code: '+(e&&e.message||e))}finally{if(b)b.disabled=false}}
+function gCard(){if(!GATEON||view!=='home'||homeTab==='maps'||!gSt||!gSt.m)return;const m=$('#main');if(!m||$('#gCard'))return;const d=document.createElement('div');d.className='card';d.id='gCard';const L=gSt.last&&gSt.last.e>Date.now()?gSt.last:null;
+  d.innerHTML='<h2>Test app access</h2><p class="note" style="margin-top:0">This device is unlocked with the master code. A 24-hour code lets someone else open the test app for one day; it stops working by itself.</p>'+(L?'<div style="text-align:center;border:1px solid var(--line);border-radius:10px;padding:10px;margin:6px 0"><div style="font-size:30px;font-weight:700;letter-spacing:6px;user-select:all;-webkit-user-select:all">'+L.c+'</div><div class="note" style="margin:2px 0 0">Latest 24-hour code · works until '+esc(gWhen(L.e))+'</div></div>':'')+'<button class="btn wide" id="gNew">Make a 24-hour access code</button><button class="btn sec wide" id="gLock" style="margin-top:8px">Lock this device now</button>';
+  const ca=$('#caBtn'),before=ca&&ca.closest('.card');if(before)m.insertBefore(d,before);else m.appendChild(d);
+  $('#gNew').onclick=gMake;$('#gLock').onclick=()=>{if(confirm('Lock the test app on this device? The master code is needed to open it again.')){gSt=null;gSave();gCheck()}}}
+const gRender0=render;render=function(k){gRender0(k);try{gCard()}catch(e){}};
+function gBoot(){if(!GATEON)return;gSt=gLoad();gCheck();if(gOpen())render();setInterval(gCheck,30000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')gCheck()})}
 render();
 checkShare();
 syBoot();
+gBoot();
 updNote();
 if('serviceWorker' in navigator){addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})})}
 </script>
