@@ -12928,8 +12928,9 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
 /******/ ])["default"];
 });</script>
 <script>
-const TESTAPP=true;const BUILD='3.54';
+const TESTAPP=true;const BUILD='3.55';
 const NOTES=[
+['3.55',['Personal app only (mytest.pricedev.ca): “Sync between my devices” on the home screen – link your phone, tablet and laptop once with a pairing code and FLRAs, lift calcs, saved hazards and saved crane configurations stay the same on all of them. No sign-in; everything is encrypted on the device before it is uploaded'],1],
 ['3.54',['✕ button at the top right of the what\'s new box to close it']],
 ['3.53',['Crane library, from your own load charts: Grove RT765E-2 boom extension deductions (now complete), Grove RT890E 80 ton block weight (now complete), Grove RT760E line pull, boom lengths, blocks and extension deductions'],1],
 ['3.52',['QR scanner: the camera is asked for fresh every time you open the scanner and let go when you close it','If the camera does not start, the scanner now says why and what to change, with an “Ask for the camera again” button. If an iPad blocks the camera, set Settings › Apps › Safari › Camera to Ask','New: “Take a photo of the code instead” – works when the live camera is blocked or shows nothing','The scanner now notices a camera that opened but shows no picture, froze or stopped'],0],
@@ -15243,7 +15244,7 @@ async function scanPhoto(file){const say=(h,b)=>scanHelp(h,b||'',1);say('Reading
   else say($('#scanp').textContent,'Take the photo again.')}
 function stopScan(){scanGen++;scanLoop++;if(scanStream){scanStream.getTracks().forEach(t=>t.stop());scanStream=null}clearTimeout(scanTimer);$('#scanv').srcObject=null;$('#scanm').classList.add('hide')}
 let scanParts={},scanPid=null;
-function scanText(t){if(scanBusy)return false;let m=/[#&]f=([\w\-]+)/.exec(String(t));
+function scanText(t){if(scanBusy)return false;{const ys=/[#&]sync=([\w\-]{43})(?![\w\-])/.exec(String(t));if(ys&&SYNCON){scanBusy=true;stopScan();$('#scanm').classList.add('hide');syJoin(ys[1]);return true}}let m=/[#&]f=([\w\-]+)/.exec(String(t));
   const pm=/[#&]p=(\w+)\.(\d+)\.(\d+)\.([\w\-]+)/.exec(String(t));
   if(!m&&pm){if(scanPid!==pm[1]){scanPid=pm[1];scanParts={}}scanParts[+pm[2]]=pm[4];const N=+pm[3],got=Object.keys(scanParts).length;$('#scanp').textContent='Received '+got+' of '+N+' codes – hold steady';if(got<N)return false;m=[0,Array.from({length:N},(_,i)=>scanParts[i+1]).join('')];scanParts={};scanPid=null}
   if(!m){$('#scanp').textContent='That QR code is not from this app.';return false}
@@ -15347,8 +15348,93 @@ async function checkUpdate(){if(PTR.busy)return;PTR.busy=1;$('#ptr').classList.a
   PTR.busy=0;ptrSet(0);toast(nv?'You have the latest – '+BN().toLowerCase()+BUILD:'Could not check for updates – no connection',2600)}
 function updNote(){let u=null;try{u=sessionStorage.getItem('flra.upd');sessionStorage.removeItem('flra.upd')}catch(e){}
   if(u&&u!==BUILD)toast('Updated to '+BN().toLowerCase()+BUILD+' – tap “what\'s new” to see the changes',4000);else if(u)toast('Still on '+BN().toLowerCase()+BUILD+' – try again in a minute',3000)}
+
+/* ---------- personal sync between devices (only on the my*.pricedev.ca apps) ----------
+   No sign-in: devices share one pairing code (QR). Everything is compressed and encrypted on the device
+   (AES-GCM, key derived from the pairing code) before it is uploaded, so the database holds nothing readable. */
+const SYNCON=/^my/.test(location.hostname)||(/^(localhost|127\.0\.0\.1)$/.test(location.hostname)&&/[?&]sync=1/.test(location.search));
+const SYK='flra.sync.v1',SYB=window.SYNC_BASE||'https://firestore.googleapis.com/v1/projects/pricedev-2d1e9/databases/(default)/documents';
+let syS=null,syBusy=false,syT=0,syKey=null,syVid='',syMsg='',syErr='';
+function syLoad(){try{const o=JSON.parse(localStorage.getItem(SYK));return o&&o.s?o:null}catch(e){return null}}
+function sySave(){try{if(syS)localStorage.setItem(SYK,JSON.stringify(syS));else localStorage.removeItem(SYK)}catch(e){}}
+const syHex=b=>Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');
+const syHash=t=>{let h=5381;for(let i=0;i<t.length;i++)h=((h<<5)+h+t.charCodeAt(i))|0;return t.length+'.'+h};
+async function syInit(){const e=new TextEncoder();syVid=syHex(await crypto.subtle.digest('SHA-256',e.encode('v|'+syS.s)));
+  syKey=await crypto.subtle.importKey('raw',await crypto.subtle.digest('SHA-256',e.encode('k|'+syS.s)),'AES-GCM',false,['encrypt','decrypt'])}
+async function syEnc(o){const iv=crypto.getRandomValues(new Uint8Array(12)),z=fflate.deflateSync(new TextEncoder().encode(JSON.stringify(o)),{level:6}),c=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},syKey,z)),u=new Uint8Array(12+c.length);u.set(iv);u.set(c,12);return b64e(u)}
+async function syDec(s){const b=b64d(s),p=await crypto.subtle.decrypt({name:'AES-GCM',iv:b.slice(0,12)},syKey,b.slice(12));return JSON.parse(new TextDecoder().decode(fflate.inflateSync(new Uint8Array(p))))}
+const syUrl=id=>SYB+'/vaults/'+syVid+'/items'+(id?'/'+encodeURIComponent(id):'');
+const syDoc=d=>{const f=d.fields||{};return {id:String(d.name).split('/').pop(),u:+((f.u&&f.u.integerValue)||0),x:!!(f.x&&f.x.booleanValue),c:(f.c&&f.c.stringValue)||''}};
+async function syGet(id){const r=await fetch(syUrl(id),{cache:'no-store'});if(r.status===404)return null;if(!r.ok)throw new Error('read '+r.status);return syDoc(await r.json())}
+async function syPut(id,u,c,x){const r=await fetch(syUrl(id),{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields:{u:{integerValue:String(u)},x:{booleanValue:!!x},c:{stringValue:c||''}}})});if(!r.ok)throw new Error('write '+r.status)}
+async function syList(){const out=[];let tok='';do{const r=await fetch(syUrl()+'?pageSize=300&mask.fieldPaths=u&mask.fieldPaths=x'+(tok?'&pageToken='+encodeURIComponent(tok):''),{cache:'no-store'});if(!r.ok)throw new Error('list '+r.status);const j=await r.json();(j.documents||[]).forEach(d=>out.push(syDoc(d)));tok=j.nextPageToken||''}while(tok);return out}
+const SYLIBS=[['_lib',()=>libLoad(),a=>libSave(a),o=>libKey(o)],['_cr',()=>crLoad(),a=>crStore(a),o=>JSON.stringify([o.name,o.d])]];
+const syOpen=id=>!!(cur&&cur.id===id&&view!=='home');
+function syDirty(){if(!syS)return false;const L={};for(const f of list){L[f.id]=1;if((f.updated||1)!==syS.seen[f.id])return true}for(const id in syS.seen)if(!L[id])return true;
+  for(const [id,get] of SYLIBS)if(syHash(JSON.stringify(get()))!==syS.lh[id]&&!(syS.lh[id]===undefined&&!get().length))return true;return false}
+const syAgo=t=>{const s=Math.max(0,Math.round((Date.now()-t)/1000));return s<50?'just now':s<3000?Math.round(s/60)+' min ago':s<80000?Math.round(s/3600)+' h ago':Math.round(s/86400)+' d ago'};
+function syStat(m){if(m!==undefined)syMsg=m;const e=$('#syStatT');if(!e)return;e.textContent=syMsg||(syErr?syErr:(syS&&syS.at?'In sync · checked '+syAgo(syS.at):'Not synced yet'));e.style.color=syErr&&!syMsg?'var(--bad,#b91c1c)':''}
+async function syncNow(force){if(!SYNCON||!syS||syBusy)return;if(navigator.onLine===false){syErr='Offline – it will sync when there is signal';syStat('');return}
+  syBusy=true;syStat('Syncing…');let changed=false,pushed=false,skipped=0;
+  try{if(!syKey)await syInit();clearTimeout(st);sySaveList0();
+    const head=await syGet('_head'),hu=head?head.u:0;
+    if(force||syDirty()||hu!==syS.head){
+      const R={};(await syList()).forEach(d=>R[d.id]=d);const now=Date.now();let L={};list.forEach(f=>L[f.id]=f);
+      /* deleted on this device since the last sync */
+      for(const id of Object.keys(syS.seen)){if(L[id])continue;const r=R[id];if(r&&!r.x&&r.u<=syS.seen[id]){await syPut(id,now,'',true);R[id]={id,u:now,x:true,c:''};pushed=true}if(!r||R[id].x)delete syS.seen[id]}
+      /* newer or new on another device */
+      for(const id of Object.keys(R)){if(id[0]==='_')continue;const r=R[id],f=L[id];
+        if(r.x){if(f&&(f.updated||1)<=r.u&&!syOpen(id)){list=list.filter(z=>z.id!==id);delete L[id];delete syS.seen[id];changed=true}continue}
+        if(f&&r.u<=(f.updated||1))continue;if(syOpen(id))continue;
+        const d=await syGet(id);if(!d||d.x||!d.c)continue;let o;try{o=await syDec(d.c)}catch(e){skipped++;continue}
+        const nf={id,updated:d.u,v:o.v};if(o.t==='calc'||XF[o.t])nf.t=o.t;hzNorm(nf.v);nf.v.rev=nf.v.rev||16;
+        const i=list.findIndex(z=>z.id===id);if(i<0)list.push(nf);else list[i]=nf;L[id]=nf;syS.seen[id]=d.u;changed=true}
+      /* newer or new on this device */
+      for(const f of list.slice()){const r=R[f.id],u=f.updated||1;if(r&&u<=r.u){if(!r.x)syS.seen[f.id]=u;continue}
+        const o={v:f.v};if(f.t)o.t=f.t;const c=await syEnc(o);if(c.length>950000){skipped++;continue}
+        await syPut(f.id,u,c,false);syS.seen[f.id]=u;pushed=true}
+      /* saved hazards and saved crane configurations (whole lists) */
+      for(const [id,get,set,key] of SYLIBS){const loc=get(),h=syHash(JSON.stringify(loc)),r=R[id],first=syS.lh[id]===undefined,lch=first?loc.length>0:h!==syS.lh[id];let up=false;
+        if(r&&r.u>(syS.ru[id]||0)){const d=await syGet(id);let rem=null;try{rem=d&&d.c?await syDec(d.c):null}catch(e){}
+          if(Array.isArray(rem)){if(lch){const seen={},m=[];rem.concat(loc).forEach(o=>{const k=key(o);if(!seen[k]){seen[k]=1;m.push(o)}});set(m);up=m.length!==rem.length}else set(rem);changed=true;syS.ru[id]=d.u}}
+        else if(lch)up=true;
+        if(up){await syPut(id,now,await syEnc(get()),false);syS.ru[id]=now;pushed=true}
+        syS.lh[id]=syHash(JSON.stringify(get()))}
+      if(pushed){await syPut('_head',now,'',false);syS.head=now}else syS.head=hu;
+      if(changed)sySaveList0()}
+    syS.at=Date.now();syErr=skipped?skipped+' item'+(skipped>1?'s':'')+' could not be synced (too large or unreadable)':'';sySave();
+  }catch(e){syErr=/Failed to fetch|NetworkError|Load failed/i.test(String(e&&e.message))?'No connection to the sync service – it will try again':'Sync problem ('+(e&&e.message||e)+') – it will try again'}
+  syBusy=false;syStat('');if(changed&&view==='home')render();if(syS&&!syErr&&syDirty()){clearTimeout(syT);syT=setTimeout(()=>syncNow(),4000)}}
+/* run a sync a few seconds after anything is saved */
+const sySaveList0=saveList;saveList=function(){const r=sySaveList0();if(SYNCON&&syS&&!syBusy){clearTimeout(syT);syT=setTimeout(()=>syncNow(),4000)}return r};
+function syCode(){return location.origin+location.pathname.replace(/index\.html$/,'')+'#sync='+syS.s}
+async function syJoin(s,ask){if(!SYNCON)return;if(!/^[\w\-]{43}$/.test(s)){alert('That is not a pairing code from this app.');return}
+  if(syS&&syS.s===s){toast('This device is already linked with that code');return}
+  if(syS&&!confirm('This device is already syncing with a different pairing code. Switch to the new one? Nothing is deleted from this device.'))return;
+  if(ask&&!confirm('Link this device? Everything saved here and everything on your other linked devices will be combined and kept in sync.'))return;
+  syS={s,seen:{},head:-1,lh:{},ru:{},at:0};syKey=null;syErr='';sySave();if(view==='home')render();await syncNow(true);toast(syErr?'Linked – '+syErr:'Linked. Devices are in sync',3000)}
+function syStart(){if(!window.crypto||!crypto.subtle){alert('Sync needs a secure (https) page and a current browser.');return}
+  const b=crypto.getRandomValues(new Uint8Array(32));syS={s:b64e(b),seen:{},head:-1,lh:{},ru:{},at:0};syKey=null;syErr='';sySave();render();syncNow(true).then(syShow)}
+function syStop(){if(!confirm('Stop syncing on this device? Everything stays saved on this device and on your other devices; this device just stops sending and receiving changes.'))return;syS=null;syKey=null;syErr='';clearTimeout(syT);sySave();render()}
+function syShow(){if(!syS)return;let m=$('#sym');if(!m){m=document.createElement('div');m.id='sym';m.className='modal hide';m.innerHTML='<div class="box" style="text-align:center;max-height:94vh;overflow:auto"><b>Pairing code for your devices</b><p class="note" style="margin:6px 0">On the other device open this same app, go to “Sync between my devices” and tap “Join – scan the pairing code”.</p><canvas id="syQr" width="660" height="660" style="width:260px;height:260px;max-width:100%"></canvas><p class="note" style="margin:8px 0 2px">Or type this code there. Keep a copy somewhere safe – anyone with this code can read your synced FLRAs, and without it they cannot be recovered if you lose every linked device.</p><div id="syTxt" style="font-family:ui-monospace,Menlo,monospace;font-size:13px;word-break:break-all;user-select:all;-webkit-user-select:all;border:1px solid var(--line);border-radius:8px;padding:8px;text-align:left"></div><button type="button" class="btn sec wide" id="syCopy" style="margin-top:8px">Copy the code</button><button type="button" class="btn wide" id="syX" style="margin-top:8px">Done</button></div>';document.body.appendChild(m);
+    m.querySelector('#syX').onclick=()=>m.classList.add('hide');m.querySelector('#syCopy').onclick=()=>{try{navigator.clipboard.writeText(syS.s).then(()=>toast('Code copied'),()=>toast('Select the code and copy it'))}catch(e){toast('Select the code and copy it')}}}
+  $('#syTxt').textContent=syS.s;try{const q=qrMake(syCode()),c=$('#syQr'),n=q.getModuleCount(),x=c.getContext('2d'),g=3,z=Math.floor(c.width/(n+2*g)),o=Math.floor((c.width-z*n)/2);x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.fillStyle='#000';for(let r=0;r<n;r++)for(let k=0;k<n;k++)if(q.isDark(r,k))x.fillRect(o+k*z,o+r*z,z,z)}catch(e){}
+  m.classList.remove('hide')}
+function syCard(){if(!SYNCON||view!=='home'||homeTab==='maps')return;const m=$('#main');if(!m||$('#syCard'))return;const d=document.createElement('div');d.className='card';d.id='syCard';
+  d.innerHTML='<h2>Sync between my devices</h2>'+(syS?'<div id="syStatT" style="font-weight:600;margin:4px 0 8px"></div><button class="btn wide" id="syNow">Sync now</button><button class="btn sec wide" id="syAdd" style="margin-top:8px">▦ Add another device – show the pairing code</button><button class="btn sec wide" id="syOff" style="margin-top:8px">Stop syncing on this device</button><p class="note">FLRAs, lift calcs, saved hazards and saved crane configurations are kept the same on every linked device. It syncs on its own when there is signal. Site map pictures you add yourself stay on the device they were added on.</p>'
+    :'<p class="note" style="margin-top:0">Keep your FLRAs, lift calcs, saved hazards and saved crane configurations the same on your phone, tablet and laptop. No sign-in – devices are linked once with a pairing code.</p><button class="btn wide" id="syNew">Start syncing on this device</button><button class="btn sec wide" id="syScan" style="margin-top:8px">▦ Join – scan the pairing code from another device</button><button class="btn sec wide" id="syType" style="margin-top:8px">Join – type the pairing code</button>');
+  const ca=$('#caBtn'),before=ca&&ca.closest('.card');if(before)m.insertBefore(d,before);else m.appendChild(d);
+  if(syS){$('#syNow').onclick=()=>syncNow(true);$('#syAdd').onclick=syShow;$('#syOff').onclick=syStop;syStat()}
+  else{$('#syNew').onclick=syStart;$('#syScan').onclick=startScan;$('#syType').onclick=()=>{const s=(prompt('Pairing code from your other device')||'').trim().replace(/^.*[#&]sync=/,'');if(s)syJoin(s)}}}
+const syRender0=render;render=function(k){syRender0(k);try{syCard()}catch(e){}};
+function syBoot(){if(!SYNCON)return;syS=syLoad();const h=/[#&]sync=([\w\-]{43})(?![\w\-])/.exec(location.hash);
+  if(h){try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}setTimeout(()=>syJoin(h[1],true),300)}
+  render();if(syS)setTimeout(()=>syncNow(),1200);
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')syncNow()});addEventListener('online',()=>syncNow());
+  setInterval(()=>{if(document.visibilityState==='visible'){if(syS)syncNow();else syStat()}},30000)}
 render();
 checkShare();
+syBoot();
 updNote();
 if('serviceWorker' in navigator){addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})})}
 </script>
