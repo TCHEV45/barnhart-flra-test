@@ -12928,8 +12928,9 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
 /******/ ])["default"];
 });</script>
 <script>
-const TESTAPP=true;const BUILD='3.61';
+const TESTAPP=true;const BUILD='3.62';
 const NOTES=[
+['3.62',['No change in the test app: “Copy everything to another device” stays here and is removed from the main app'],1],
 ['3.61',['Sync is manual now: it only happens when you tap Sync now. There is a Sync now bar at the top of the home screen that shows when changes are waiting','Simpler sync: pick a main device, then other devices are “borrowed” – they just have Sync now and “Finished – sync and clear this device”','Scanning an FLRA\'s QR code now only offers a PDF or picture copy. It no longer adds an editable FLRA to the other device'],0],
 ['3.60',['Test app: a 6-digit access code is needed to open it. The master code unlocks a device for good and can make 24-hour access codes for other people'],1],
 ['3.59',['Sync is only a pass-through now: when the last linked device stops syncing, your copy is removed from the sync service and everything stays saved on the device','“Stop syncing and clear this device” will not run on the only linked device, so nothing can be wiped for good by mistake']],
@@ -15502,6 +15503,8 @@ function gCard(){if(!GATEON||view!=='home'||homeTab==='maps'||!gSt||!gSt.m)retur
   $('#gNew').onclick=gMake;$('#gLock').onclick=()=>{if(confirm('Lock the test app on this device? The master code is needed to open it again.')){gSt=null;gSave();gCheck()}}}
 const gRender0=render;render=function(k){gRender0(k);try{gCard()}catch(e){}};
 function gBoot(){if(!GATEON)return;gSt=gLoad();gCheck();if(gOpen())render();setInterval(gCheck,30000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')gCheck()})}
+/* the QR “Copy everything to another device” card is only in the test app; in the main app sync does that job */
+const caRender0=render;render=function(k){caRender0(k);if(!TESTAPP){const c=$('#caBtn'),d=c&&c.closest('.card');if(d)d.remove()}};
 render();
 checkShare();
 syBoot();
