@@ -12928,8 +12928,9 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
 /******/ ])["default"];
 });</script>
 <script>
-const TESTAPP=true;const BUILD='3.58';
+const TESTAPP=true;const BUILD='3.59';
 const NOTES=[
+['3.59',['Sync is only a pass-through now: when the last linked device stops syncing, your copy is removed from the sync service and everything stays saved on the device','“Stop syncing and clear this device” will not run on the only linked device, so nothing can be wiped for good by mistake']],
 ['3.58',['Sync between devices is now in the main app as well as the test app','Main app: the Christina Lake SAGD site map with its location finder is now built in under Site maps']],
 ['3.57',['Sync: new “Stop syncing and clear this device” for shared tablets – it syncs first, then removes your FLRAs, lift calcs, saved hazards and crane configurations from that device only. It will not clear if it cannot sync']],
 ['3.56',['Sync is now in this test app itself (test.pricedev.ca); the separate mytest address is retired'],1],
@@ -15371,6 +15372,16 @@ const syDoc=d=>{const f=d.fields||{};return {id:String(d.name).split('/').pop(),
 async function syGet(id){const r=await fetch(syUrl(id),{cache:'no-store'});if(r.status===404)return null;if(!r.ok)throw new Error('read '+r.status);return syDoc(await r.json())}
 async function syPut(id,u,c,x){const r=await fetch(syUrl(id),{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields:{u:{integerValue:String(u)},x:{booleanValue:!!x},c:{stringValue:c||''}}})});if(!r.ok)throw new Error('write '+r.status)}
 async function syList(){const out=[];let tok='';do{const r=await fetch(syUrl()+'?pageSize=300&mask.fieldPaths=u&mask.fieldPaths=x'+(tok?'&pageToken='+encodeURIComponent(tok):''),{cache:'no-store'});if(!r.ok)throw new Error('list '+r.status);const j=await r.json();(j.documents||[]).forEach(d=>out.push(syDoc(d)));tok=j.nextPageToken||''}while(tok);return out}
+const SYBK='flra.syncbye.v1',SYDAY=86400000;
+const syDevId=()=>{if(!syS.dev)syS.dev=b64e(crypto.getRandomValues(new Uint8Array(9)));return '_d'+syS.dev};
+const syOthers=(R,mine)=>Object.keys(R).filter(id=>id.slice(0,2)==='_d'&&id!==mine&&!R[id].x&&R[id].u>Date.now()-60*SYDAY).length;
+async function syDel(id){let ok=false;try{const r=await fetch(syUrl(id),{method:'DELETE'});ok=r.ok}catch(e){}if(!ok)await syPut(id,0,'',false)}
+/* this device has stopped syncing: take it off the list, and if no other device is still linked, remove everything from the sync service */
+async function syByeRun(){let q=[];try{q=JSON.parse(localStorage.getItem(SYBK))||[]}catch(e){}if(!q.length||syBusy||navigator.onLine===false)return;syBusy=true;const keep=syS,left=[];
+  for(const j of q){try{syS={s:j.s};await syInit();const R={};(await syList()).forEach(d=>R[d.id]=d);const mine='_d'+j.dev;
+      if(syOthers(R,mine)){if(R[mine])await syPut(mine,Date.now(),'',true)}else{for(const id of Object.keys(R))await syDel(id)}}catch(e){left.push(j)}}
+  syS=keep;syKey=null;syVid='';syBusy=false;try{if(left.length)localStorage.setItem(SYBK,JSON.stringify(left));else localStorage.removeItem(SYBK)}catch(e){}}
+function syBye(){if(!syS)return;let q=[];try{q=JSON.parse(localStorage.getItem(SYBK))||[]}catch(e){}q.push({s:syS.s,dev:syS.dev||''});try{localStorage.setItem(SYBK,JSON.stringify(q))}catch(e){}}
 const SYLIBS=[['_lib',()=>libLoad(),a=>libSave(a),o=>libKey(o)],['_cr',()=>crLoad(),a=>crStore(a),o=>JSON.stringify([o.name,o.d])]];
 const syOpen=id=>!!(cur&&cur.id===id&&view!=='home');
 function syDirty(){if(!syS)return false;const L={};for(const f of list){L[f.id]=1;if((f.updated||1)!==syS.seen[f.id])return true}for(const id in syS.seen)if(!L[id])return true;
@@ -15383,6 +15394,7 @@ async function syncNow(force){if(!SYNCON||!syS||syBusy)return;if(navigator.onLin
     const head=await syGet('_head'),hu=head?head.u:0;
     if(force||syDirty()||hu!==syS.head){
       const R={};(await syList()).forEach(d=>R[d.id]=d);const now=Date.now();let L={};list.forEach(f=>L[f.id]=f);
+      {const dv=syDevId(),r=R[dv];if(!r||r.x||r.u<now-SYDAY){await syPut(dv,now,'',false);R[dv]={id:dv,u:now,x:false,c:''}}syS.others=syOthers(R,dv)}
       /* deleted on this device since the last sync */
       for(const id of Object.keys(syS.seen)){if(L[id])continue;const r=R[id];if(r&&!r.x&&r.u<=syS.seen[id]){await syPut(id,now,'',true);R[id]={id,u:now,x:true,c:''};pushed=true}if(!r||R[id].x)delete syS.seen[id]}
       /* newer or new on another device */
@@ -15418,19 +15430,22 @@ async function syJoin(s,ask){if(!SYNCON)return;if(!/^[\w\-]{43}$/.test(s)){alert
   syS={s,seen:{},head:-1,lh:{},ru:{},at:0};syKey=null;syErr='';sySave();if(view==='home')render();await syncNow(true);toast(syErr?'Linked – '+syErr:'Linked. Devices are in sync',3000)}
 function syStart(){if(!window.crypto||!crypto.subtle){alert('Sync needs a secure (https) page and a current browser.');return}
   const b=crypto.getRandomValues(new Uint8Array(32));syS={s:b64e(b),seen:{},head:-1,lh:{},ru:{},at:0};syKey=null;syErr='';sySave();render();syncNow(true).then(syShow)}
-function syStop(){if(!confirm('Stop syncing on this device? Everything stays saved on this device and on your other devices; this device just stops sending and receiving changes.'))return;syS=null;syKey=null;syErr='';clearTimeout(syT);sySave();render()}
+async function syStop(){if(!syS||syBusy)return;if(!confirm('Stop syncing on this device? Everything stays saved on this device. If no other device is still linked, your copy is also removed from the sync service.'))return;
+  if(navigator.onLine!==false){toast('Sending the last changes…',3000);await syncNow(true)}
+  syBye();syS=null;syKey=null;syErr='';clearTimeout(syT);sySave();render();await syByeRun();toast('Syncing is off on this device. Everything is still saved here',3500)}
 async function syWipe(){if(!syS||syBusy)return;if(navigator.onLine===false){alert('No signal. This device cannot be cleared until it has synced, or your latest changes would be lost. Try again when there is signal.');return}
   toast('Syncing before clearing…',4000);await syncNow(true);
   if(syErr||syDirty()){alert('Could not finish syncing ('+(syErr||'changes still waiting')+'). Nothing was cleared. Try again when there is signal.');return}
+  if(!syS.others){alert('This is the only device linked with this pairing code, so clearing it would delete everything for good. Nothing was cleared. Use “Stop syncing – keep everything on this device”, or link your own phone first.');return}
   if(!confirm('Everything is synced. Clear this device now? All FLRAs, lift calcs, saved hazards and saved crane configurations will be removed from THIS device only. They stay on your other linked devices.'))return;
   if(!confirm('Last check: clear this device and stop syncing here?'))return;
-  clearTimeout(syT);clearTimeout(st);syS=null;syKey=null;syErr='';sySave();cur=null;view='home';list=[];sySaveList0();libSave([]);crStore([]);render();scrollTo(0,0);toast('This device is cleared and no longer linked',3500)}
+  clearTimeout(syT);clearTimeout(st);syBye();syS=null;syKey=null;syErr='';sySave();cur=null;view='home';list=[];sySaveList0();libSave([]);crStore([]);render();scrollTo(0,0);await syByeRun();toast('This device is cleared and no longer linked',3500)}
 function syShow(){if(!syS)return;let m=$('#sym');if(!m){m=document.createElement('div');m.id='sym';m.className='modal hide';m.innerHTML='<div class="box" style="text-align:center;max-height:94vh;overflow:auto"><b>Pairing code for your devices</b><p class="note" style="margin:6px 0">On the other device open this same app, go to “Sync between my devices” and tap “Join – scan the pairing code”.</p><canvas id="syQr" width="660" height="660" style="width:260px;height:260px;max-width:100%"></canvas><p class="note" style="margin:8px 0 2px">Or type this code there. Keep a copy somewhere safe – anyone with this code can read your synced FLRAs, and without it they cannot be recovered if you lose every linked device.</p><div id="syTxt" style="font-family:ui-monospace,Menlo,monospace;font-size:13px;word-break:break-all;user-select:all;-webkit-user-select:all;border:1px solid var(--line);border-radius:8px;padding:8px;text-align:left"></div><button type="button" class="btn sec wide" id="syCopy" style="margin-top:8px">Copy the code</button><button type="button" class="btn wide" id="syX" style="margin-top:8px">Done</button></div>';document.body.appendChild(m);
     m.querySelector('#syX').onclick=()=>m.classList.add('hide');m.querySelector('#syCopy').onclick=()=>{try{navigator.clipboard.writeText(syS.s).then(()=>toast('Code copied'),()=>toast('Select the code and copy it'))}catch(e){toast('Select the code and copy it')}}}
   $('#syTxt').textContent=syS.s;try{const q=qrMake(syCode()),c=$('#syQr'),n=q.getModuleCount(),x=c.getContext('2d'),g=3,z=Math.floor(c.width/(n+2*g)),o=Math.floor((c.width-z*n)/2);x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.fillStyle='#000';for(let r=0;r<n;r++)for(let k=0;k<n;k++)if(q.isDark(r,k))x.fillRect(o+k*z,o+r*z,z,z)}catch(e){}
   m.classList.remove('hide')}
 function syCard(){if(!SYNCON||view!=='home'||homeTab==='maps')return;const m=$('#main');if(!m||$('#syCard'))return;const d=document.createElement('div');d.className='card';d.id='syCard';
-  d.innerHTML='<h2>Sync between my devices</h2>'+(syS?'<div id="syStatT" style="font-weight:600;margin:4px 0 8px"></div><button class="btn wide" id="syNow">Sync now</button><button class="btn sec wide" id="syAdd" style="margin-top:8px">▦ Add another device – show the pairing code</button><button class="btn sec wide" id="syOff" style="margin-top:8px">Stop syncing – keep everything on this device</button><button class="btn sec wide" id="syWipe" style="margin-top:8px;color:#b91c1c;border-color:#b91c1c">Stop syncing and clear this device (shared tablet)</button><p class="note">FLRAs, lift calcs, saved hazards and saved crane configurations are kept the same on every linked device. It syncs on its own when there is signal. Site map pictures you add yourself stay on the device they were added on.</p>'
+  d.innerHTML='<h2>Sync between my devices</h2>'+(syS?'<div id="syStatT" style="font-weight:600;margin:4px 0 8px"></div><button class="btn wide" id="syNow">Sync now</button><button class="btn sec wide" id="syAdd" style="margin-top:8px">▦ Add another device – show the pairing code</button><button class="btn sec wide" id="syOff" style="margin-top:8px">Stop syncing – keep everything on this device</button><button class="btn sec wide" id="syWipe" style="margin-top:8px;color:#b91c1c;border-color:#b91c1c">Stop syncing and clear this device (shared tablet)</button><p class="note">FLRAs, lift calcs, saved hazards and saved crane configurations are kept the same on every linked device. It syncs on its own when there is signal. The sync service only holds a copy while a device is linked – when the last linked device stops syncing, that copy is removed and everything stays on the device. Site map pictures you add yourself stay on the device they were added on.</p>'
     :'<p class="note" style="margin-top:0">Keep your FLRAs, lift calcs, saved hazards and saved crane configurations the same on your phone, tablet and laptop. No sign-in – devices are linked once with a pairing code.</p><button class="btn wide" id="syNew">Start syncing on this device</button><button class="btn sec wide" id="syScan" style="margin-top:8px">▦ Join – scan the pairing code from another device</button><button class="btn sec wide" id="syType" style="margin-top:8px">Join – type the pairing code</button>');
   const ca=$('#caBtn'),before=ca&&ca.closest('.card');if(before)m.insertBefore(d,before);else m.appendChild(d);
   if(syS){$('#syNow').onclick=()=>syncNow(true);$('#syAdd').onclick=syShow;$('#syOff').onclick=syStop;$('#syWipe').onclick=syWipe;syStat()}
@@ -15438,8 +15453,8 @@ function syCard(){if(!SYNCON||view!=='home'||homeTab==='maps')return;const m=$('
 const syRender0=render;render=function(k){syRender0(k);try{syCard()}catch(e){}};
 function syBoot(){if(!SYNCON)return;syS=syLoad();const h=/[#&]sync=([\w\-]{43})(?![\w\-])/.exec(location.hash);
   if(h){try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}setTimeout(()=>syJoin(h[1],true),300)}
-  render();if(syS)setTimeout(()=>syncNow(),1200);
-  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')syncNow()});addEventListener('online',()=>syncNow());
+  render();setTimeout(()=>syByeRun().then(()=>{if(syS)syncNow()}),1200);
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')syncNow()});addEventListener('online',()=>syByeRun().then(()=>syncNow()));
   setInterval(()=>{if(document.visibilityState==='visible'){if(syS)syncNow();else syStat()}},30000)}
 render();
 checkShare();
