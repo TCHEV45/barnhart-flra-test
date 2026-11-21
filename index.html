@@ -12935,8 +12935,9 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
 /******/ ])["default"];
 });</script>
 <script>
-const TESTAPP=true;const BUILD='3.78';
+const TESTAPP=true;const BUILD='3.79';
 const NOTES=[
+['3.79',['Barnhart Crane Lift FLRA sign-off: the Init. boxes beside the names are gone – print the name and sign. Initials already typed on older FLRAs still print'],1],
 ['3.78',['Suncor SWP sign-offs: the whole “Lift Plan – Verification sign-off” section is now hidden when it is not required – the lift is at or under 80% and neither Multi Crane Lift nor “Overlapping equipment or Multi Crane Lift” is ticked. Before, only the Lift Specialist line hid. It prints blank and comes back if any of that changes','Suncor SWP Movement tab: new box “Crane will be moved on site”. Until it is ticked the move details, the checklist and the Crane Movement sign-off are hidden and print blank. A form that already has movement answers opens with the box ticked','Suncor SWP sign-offs: the Init. boxes beside the names are gone – print the name and sign','Crane library: the LTM 1095-5.1 has a third outrigger stance to pick, 8.2\' x 24.1\', as in its chart book'],1],
 ['3.77',['Suncor SWP: the new box is now called “Overlapping equipment or Multi Crane Lift”, and ticking Multi Crane Lift in the Complex Criteria ticks it for you. Un-ticking Multi Crane Lift takes that tick back off, unless you tapped the box yourself'],1],
 ['3.76',['Suncor SWP: “Additional Planning for Preventing Collisions” is now hidden until you tick the new box “Overlapping equipment or tandem lift”. Un-ticking hides the steps again and leaves them blank on the PDF and picture copy. A form that already has answers in that section opens with the box ticked'],1],
@@ -14190,8 +14191,8 @@ sign:()=>{const cr=cur.v.crew||(cur.v.crew=[{},{},{}]);
   <div class="crew" style="grid-template-columns:1fr 112px"><input type="text" data-k="q3_name" value="${val('q3_name')}" placeholder="Name (print)" aria-label="Lift Director name" autocomplete="off"><button type="button" data-sigr="q3" aria-label="Lift Director signature">${cur.v.q3Sig?`<img src="${cur.v.q3Sig}" alt="signed">`:'Sign'}</button></div>
   ${tx('q3_c','Phone# or Radio Ch')}</div>
   <div class="card"><h2>Signal Person</h2>${tx('q11_name','Name')}${tx('q11_c','Company')}</div>
-  <div class="card"><h2>Names of personnel involved in lift</h2><p class="note" style="margin-top:0">Print name, initial, and sign with a finger.</p>
-  ${cr.map((c,i)=>`<div class="crew"><input type="text" data-arr="crew" data-i="${i}" data-f="name" value="${aval('crew',i,'name')}" placeholder="Name" aria-label="Name ${i+1}" autocomplete="off"><input type="text" data-arr="crew" data-i="${i}" data-f="init" value="${aval('crew',i,'init')}" placeholder="Init." aria-label="Initials ${i+1}" autocomplete="off"><button type="button" data-sig="${i}" aria-label="Signature ${i+1}">${c.sig?`<img src="${c.sig}" alt="signed">`:'Sign'}</button></div>`).join('')}
+  <div class="card"><h2>Names of personnel involved in lift</h2><p class="note" style="margin-top:0">Print name and sign with a finger.</p>
+  ${cr.map((c,i)=>`<div class="crew" style="grid-template-columns:1fr 112px"><input type="text" data-arr="crew" data-i="${i}" data-f="name" value="${aval('crew',i,'name')}" placeholder="Name" aria-label="Name ${i+1}" autocomplete="off"><button type="button" data-sig="${i}" aria-label="Signature ${i+1}">${c.sig?`<img src="${c.sig}" alt="signed">`:'Sign'}</button></div>`).join('')}
   <button type="button" class="btn sec wide" data-add="crew">＋ Add person</button></div>
   <div class="card"><h2>Area for company use only – for review purposes</h2>
   ${REV.map(([k,l])=>`<div class="lab" style="margin-top:8px"><b>${l}</b></div>
