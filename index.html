@@ -12928,8 +12928,9 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
 /******/ ])["default"];
 });</script>
 <script>
-const TESTAPP=true;const BUILD='3.66';
+const TESTAPP=true;const BUILD='3.67';
 const NOTES=[
+['3.67',['Crane library: LTM 1500-8.1 line pull corrected from its chart book – 30,600 lbs single line, with the reeving table up to 26 parts (604,000 lbs)','Grove and Tadano cranes: parts of line list now shows single line pull x parts of line for each number of parts'],1],
 ['3.66',['Every fill-in box now opens the normal keyboard instead of the number pad (dates, times and Yes / No / N/A stay as they are)','Crane library: LTM 1110-5.1 stowed folding jib reductions added from its chart book (40.50); LTM 1450-8.1 boom lengths 260.8 to 278.9 ft added; Grove RT9130E outriggers corrected to 27\'10" / 19\'9" / 11\'8"; Broderson IC-200-2C added (line pull only so far)'],1],
 ['3.65',['New: Back up and restore on the home screen. “Save a backup file” puts everything on this device – FLRAs and lift calcs with signatures, saved hazards, saved crane configurations, sites and map pictures – into one file you can keep in Files, Drive or email','“Restore from a backup file” adds a backup back into the app on any device. Nothing already there is removed, and when an FLRA is in both, the newer copy is kept'],0],
 ['3.63',['A device linked before the simpler sync is asked once whether it is your main device or a borrowed one'],0],
@@ -13267,7 +13268,7 @@ const CRLIB=[{id:'ltm1045-3.1',name:'Liebherr LTM 1045-3.1',cat:'All Terrain –
   web:1,out:[["Full: 31'6\" wide x 32'10\" long","31'6\" x 32'10\" (full)"]],
   trav:{"w":[["10'8\" – 525/80 R 25 (20.5 R 25) tyres","10'8\""]],"h":[["13'2\" – 525 tyres not listed for this crane; largest printed (14.00 R 25)","13'2\""]]},
   cwt:[[15,33100],[30,66100],[45,99200],[60,132300],[75,165400],[90,198400],[105,231500],[120,264600],[135,297600],[165,363800]],
-  line:[28325],
+  line:[30600,60800,90600,119900,148800,177300,205300,233000,260200,286800,313300,339300,364900,390000,414900,439400,463400,487200,510600,533500,556200,578500,600600,604000,604000,604000],
   blocks:[[273.9,604000,10805,13,26,0],[250.0,551250,8159,11,23,0],[231.6,510600,7277,9,19,0],[188.2,414900,5954,7,15,0],[142.1,313300,5072,5,11,0],[93.1,205300,3969,3,7,0],[40.0,88200,3087,1,3,0],[12.5,27500,1544,0,1,0]],
   booms:[53,70,87,104,121,138,155,164,172,189,206,224,241,258,276],
   jibNote:'',
@@ -14025,6 +14026,8 @@ const CRLIB=[{id:'ltm1045-3.1',name:'Liebherr LTM 1045-3.1',cat:'All Terrain –
   jibStow:[0,0,0,0,0],
   jibErect:[["Jib deployed erected (deduct from main boom)",[500,500,500,500,500]]]}];
 /* main app only gets cranes with every pick-list filled: outriggers, travel width/height, counterweights, line pull, hook blocks with weights, boom lengths, jib weights */
+/* Grove and Tadano: line pull for n parts = single line pull x n (owner's rule, 2026-11-21). Parts go up to the biggest block's parts, or enough parts to reach its capacity */
+CRLIB.forEach(x=>{if(!/^(Grove|Tadano)/.test(x.name)||x.line.length!==1||!(x.line[0]>0)||!x.blocks.length)return;const w=x.line[0],n=Math.min(30,Math.max(...x.blocks.map(b=>Math.max(b[4]||0,Math.ceil((b[1]||0)/w)))));x.line=Array.from({length:n},(_,i)=>w*(i+1))});
 const crFull=x=>{const n=v=>Array.isArray(v)&&v.length>0;return n(x.out)&&!!x.trav&&n(x.trav.w)&&n(x.trav.h)&&n(x.cwt)&&x.cwt.every(w=>w[1]>0)&&n(x.line)&&x.line.every(v=>v>0)&&n(x.blocks)&&x.blocks.every(b=>b[1]>0&&b[2]>0)&&n(x.booms)&&n(x.jibStow)&&n(x.jibErect)&&!x.gap};
 const MAINLIB=true; /* crane library on the main app: only the cranes listed in MAINIDS (picked 2026-11-21). Jib deduction pick-lists on main are kept for Liebherrs only */
 const MAINIDS=["ltm1045-3.1","ltm1055-3.2","ltm1070-4.1","ltm1095-5.1","ltm1100-4.1","ltm1100-4.2","ltm1110-5.1","ltm1130-5.1","ltm1160-5.1","ltm1220-5.2","ltm1250-5.1","ltm1250-6.1","ltm1400-7.1","ltm1450-8.1","ltm1500-8.1","ltm11200-9.1","grove-rt880e","grove-rt890e","grove-rt9130e","tadano-gr-800xl-1","tadano-gr-1000xl-2"];
