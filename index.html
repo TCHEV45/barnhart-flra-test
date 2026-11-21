@@ -12935,8 +12935,9 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
 /******/ ])["default"];
 });</script>
 <script>
-const TESTAPP=true;const BUILD='3.76';
+const TESTAPP=true;const BUILD='3.77';
 const NOTES=[
+['3.77',['Suncor SWP: the new box is now called “Overlapping equipment or Multi Crane Lift”, and ticking Multi Crane Lift in the Complex Criteria ticks it for you. Un-ticking Multi Crane Lift takes that tick back off, unless you tapped the box yourself'],1],
 ['3.76',['Suncor SWP: “Additional Planning for Preventing Collisions” is now hidden until you tick the new box “Overlapping equipment or tandem lift”. Un-ticking hides the steps again and leaves them blank on the PDF and picture copy. A form that already has answers in that section opens with the box ticked'],1],
 ['3.75',['Suncor SWP, Liebherr cranes: a Clear button beside the telescopic section buttons puts every section back to 0 and empties the box'],1],
 ['3.74',['Suncor SWP, Liebherr cranes: the telescopic section drop-downs are now a row of numbered section buttons, like the crane’s telescoping screen. Tap a section to step it through 0, 46, 92 and 100 % (0, 50 and 100 % on the LTM 11200-9.1) and the box below fills in as 92/46/0/0/0 %. Type a set-up in the box and the buttons follow it'],1],
@@ -14306,7 +14307,7 @@ function clrPage(){const v=cur.v,T=SH(),m=$('#main'),del=(o,re)=>Object.keys(o).
   m.querySelectorAll('[data-k]').forEach(e=>{const k=e.dataset.k;delete dvk(k)[k]});
   m.querySelectorAll('[data-seg]').forEach(e=>{const k=e.dataset.seg;if(k!=='units')delete dvk(k)[k]});
   m.querySelectorAll('[data-chk]').forEach(e=>{delete v[e.dataset.chk]});
-  if(cur.t==='syn'&&tab==='slift')SYNCOL.forEach(k=>delete v[k]);
+  if(cur.t==='syn'&&tab==='slift'){SYNCOL.forEach(k=>delete v[k]);delete v.colAuto}
   m.querySelectorAll('[data-sigr]').forEach(e=>{const k=e.dataset.sigr;delete v[k+'Sig'];delete v[k+'Sp'];delete v[k+'Sb']});
   if(tab==='check')Object.keys(v).forEach(k=>{if(/^q\d+(_c|_x)?$/.test(k)&&!/^q(2|3|11)_c$/.test(k))delete v[k]});
   if(tab==='haz')v.haz=[{}];
@@ -14386,7 +14387,7 @@ function render(keep){
   m.querySelectorAll('[data-lib]').forEach(e=>e.onchange=()=>{const c=e.dataset.lib,T=SH(),old=libOf(T,c),x=CRLIB.find(y=>y.id===e.value);T['c'+c+'_lib']=e.value;if(x&&(!T['c'+c+'_make']||(old&&T['c'+c+'_make']===old.name)))T['c'+c+'_make']=x.name;touch();render(true)});
   m.querySelectorAll('[data-k]').forEach(e=>e.oninput=()=>{const K=e.dataset.k,T=dvk(K),O=T[K]||'';T[K]=e.value;if(isSyn(cur)){const M={unit:'mUnit',craneMake:'mSize'}[K];if(M&&(!cur.v[M]||cur.v[M]===O))cur.v[M]=e.value}if(/^k\d+_ang$/.test(K))T[K+'Auto']='';if(/^k\d+_(boom|r0|r1|ang)$/.test(K))autoAng(T,parseInt(K.slice(1),10));touch();if(K==='job'&&!isSyn(cur))$('#title').textContent=e.value||(isCalc(cur)?'New lift calc':'New FLRA');if(isSyn(cur)){if(tab==='slift')synRefresh();if(XF[cur.t].keys.test(K))$('#title').textContent=synLab(cur)}if(tab==='calc')refresh()});
   m.querySelectorAll('[data-seg]').forEach(s=>s.querySelectorAll('button').forEach(b=>b.onclick=()=>{const k=s.dataset.seg,T=dvk(k);T[k]=(T[k]===b.dataset.v&&k!=='units'&&!/cwtU$/.test(k))?'':b.dataset.v;if(k==='liftClass'){delete T.cxAuto;delete T.cxPrev}if(k==='cwt')synCw(1);touch();if(/^k\d+_cr$/.test(k)&&!T[k])T[k]=b.dataset.v;if(/^(two|units|ov|q\d+|k\d+_cr)$/.test(k))render(true);else s.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.v===T[k]))}));
-  m.querySelectorAll('[data-chk]').forEach(b=>b.onclick=()=>{const k=b.dataset.chk;cur.v[k]=(k==='colOn'?synColOn(cur.v):cur.v[k]==='1')?'':'1';if(/^complexCriteria_\d+$/.test(k)&&cur.t==='syn'){if(k==='complexCriteria_0')delete cur.v.c90Auto;synCx()}touch();render(true)});
+  m.querySelectorAll('[data-chk]').forEach(b=>b.onclick=()=>{const k=b.dataset.chk;cur.v[k]=(k==='colOn'?synColOn(cur.v):cur.v[k]==='1')?'':'1';if(k==='colOn')delete cur.v.colAuto;if(/^complexCriteria_\d+$/.test(k)&&cur.t==='syn'){if(k==='complexCriteria_0')delete cur.v.c90Auto;if(k==='complexCriteria_1')synMc();synCx()}touch();render(true)});
   m.querySelectorAll('[data-arr]').forEach(e=>{const h=()=>{const a=cur.v[e.dataset.arr],i=+e.dataset.i;if(e.dataset.j!=null)a[i].items[+e.dataset.j][e.dataset.f]=e.value;else (a[i]||(a[i]={}))[e.dataset.f]=e.value;if(e.tagName==='SELECT')e.className='ram '+(e.value?'r'+RAMC[e.value]:'');touch()};e.oninput=h;e.onchange=h});
   m.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{cur.v[b.dataset.add].push(b.dataset.add==='haz'?{task:'',items:[{}]}:{});touch();render(true)});
   m.querySelectorAll('[data-csave]').forEach(b=>b.onclick=()=>crSave(+b.dataset.csave));
@@ -14647,7 +14648,7 @@ slift:{sub:'Mobile Crane Operation Safe Work Practice – Syncrude. Appendix A �
   {k:'lmlGt',l:'LML Capacity > Planned Total Lift Weight',t:'yn'},
   {k:'lmlMatch',l:'LML Capacity Matches Load Chart Capacity',t:'yn'},
   {k:'boomClear',l:'Boom Clearance to Obstructions Sufficient',t:'yn'}]},
- {h:'Additional Planning for Preventing Collisions',gate:'colOn',gateLab:'Overlapping equipment or tandem lift',gateNote:'Only needed when cranes or other lifting equipment work in overlapping areas, or for a tandem lift. Tick the box to show the steps.',fields:[
+ {h:'Additional Planning for Preventing Collisions',gate:'colOn',gateLab:'Overlapping equipment or Multi Crane Lift',gateNote:'Only needed when cranes or other lifting equipment work in overlapping areas, or for a Multi Crane Lift. Tick the box to show the steps. Ticking Multi Crane Lift in the Complex Criteria ticks it for you.',fields:[
   {k:'col1',n:'1',l:'Lift Director, Signal Person and Crane Operator from each Lift Crew',t:'yn'},
   {k:'col2',n:'2',l:'Determine if either/any of the cranes can be relocated to be out of each other’s way. (Yes = skip remaining steps, No = go to next step)',t:'yn'},
   {k:'col3',n:'3',l:'Determine the working area of each Crane (e.g., path of Load from start to finish), tail swing of the cranes/lifting equipment up to and including counterweight, A-frame and super-lift attachment.',t:'yn'},
@@ -14778,10 +14779,12 @@ function synCalc(v){const g=k=>{const x=n(v[k]);return isFinite(x)?x:NaN},s=a=>{
   const util=total>0&&cap>0?total/cap*100:NaN,line=g('linePull')>0&&g('parts')>0?g('linePull')*g('parts'):NaN;return {fact,total,util,line}}
 /* over-80% items on the lift plan: the five checks, and the Lift Specialist endorsement (paper: "if verification section indicates lift will exceed 80% or more than one crane involved") */
 const SYN80=['dryRun','radiusVerified','lmlGt','lmlMatch','boomClear'];
-/* "Additional Planning for Preventing Collisions" shows only while the "Overlapping equipment or tandem lift" box (colOn) is ticked. A form filled in before
+/* "Additional Planning for Preventing Collisions" shows only while the "Overlapping equipment or Multi Crane Lift" box (colOn) is ticked. A form filled in before
    the box existed that already has answers in that section counts as ticked. Un-ticking keeps the answers but hides them and leaves them blank on the paper copy. */
 const SYNCOL=['col1','col2','col3','col4','col5','col6','ld1','sp1','co1','ld2','sp2','co2'];
 const synColOn=v=>v.colOn==='1'||(v.colOn===undefined&&SYNCOL.some(k=>v[k]!=null&&String(v[k]).trim()!==''));
+/* The Multi Crane Lift box in the Complex Criteria (complexCriteria_1) ticks that box; un-ticking Multi Crane Lift takes the tick back off unless the box was tapped by hand since (colAuto) */
+function synMc(){const v=cur.v;if(v.complexCriteria_1==='1'){if(!synColOn(v)){v.colOn='1';v.colAuto='1'}}else if(v.colAuto==='1'){v.colOn='';delete v.colAuto}}
 const synU80=v=>{const u=synCalc(v).util;return isFinite(u)&&u<=80};
 const synNoLS=v=>synU80(v)&&v.complexCriteria_1!=='1';
 /* Lift Class: ticking any Complex Criteria ticks Complex; clearing them all takes that tick back off (restores what was there) unless the class was picked by hand since */
