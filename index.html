@@ -53,6 +53,12 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--acc);outline-off
 .seg.col button{flex:1 1 100%;text-align:left;padding-left:12px}
 .seg button.on{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
 .seg button.on.no{background:#52525b;border-color:#52525b}
+.tele{display:grid;gap:5px;margin:3px 0 8px}
+.tele button{min-width:0;border:2px solid var(--line);border-radius:8px;padding:9px 0 6px;background:#fff;color:var(--ink);font-family:inherit;line-height:1.1;touch-action:manipulation}
+.tele button b{display:block;font-size:19px;font-weight:700}
+.tele button small{display:inline-block;margin-top:5px;min-width:24px;padding:2px 0;border-radius:11px;background:#e5e7eb;font-size:12px;color:var(--ink)}
+.tele button.on{border-color:var(--acc)}
+.tele button.on small{background:var(--acc);color:#fff}
 button.blk{display:block;width:100%;text-align:left;border:2px solid var(--line);background:#fff;border-radius:8px;padding:10px;font-size:15px;color:var(--ink);margin:6px 0;line-height:1.3}
 button.blk.on{border-color:var(--ok);background:#f0fdf4;font-weight:600}
 .btn{display:inline-block;border:0;border-radius:10px;background:var(--acc);color:#fff;padding:12px 14px;font-size:16px;font-weight:600}
@@ -12928,8 +12934,9 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
 /******/ ])["default"];
 });</script>
 <script>
-const TESTAPP=true;const BUILD='3.73';
+const TESTAPP=true;const BUILD='3.74';
 const NOTES=[
+['3.74',['Suncor SWP, Liebherr cranes: the telescopic section drop-downs are now a row of numbered section buttons, like the crane’s telescoping screen. Tap a section to step it through 0, 46, 92 and 100 % (0, 50 and 100 % on the LTM 11200-9.1) and the box below fills in as 92/46/0/0/0 %. Type a set-up in the box and the buttons follow it'],1],
 ['3.73',['Suncor SWP, Liebherr cranes: above “Configuration of Telescopic Boom Sections” there is now a small pick-list for each telescopic section (Tele 1, Tele 2 …) – pick 0, 46, 92 or 100 % and the box fills in as 92/46/0/0/0 %. The number of pick-lists matches the crane picked on the form. The LTM 1500-8.1 and LTM 11200-9.1 ask which boom is on first, and the LTM 11200-9.1 offers 0, 50 and 100 % as in its chart book. You can still type in the box'],1],
 ['3.72',['Suncor SWP: ticking Counterweight – Full now enters the full counterweight in Counterweight Amount – the largest one the crane library lists for the crane picked on the form. Un-ticking Full or ticking Reduced takes it back out. If the box already holds a different number it asks before changing it, and the pick-list is still there'],1],
 ['3.71',['Suncor SWP: the “Capacity Utilization >90%” box ticks itself while the lift plan is over 90%, which also ticks Lift Class – Complex. It comes off again if the lift drops back to 90% or less, unless you ticked it yourself'],1],
@@ -14809,15 +14816,21 @@ function synCw(ask){if(!cur||cur.t!=='syn')return;const v=cur.v,mx=synCwMax(),au
   else{if(auto)put('');delete v.cwtAuto}}
 const WEBN=' – from the manufacturer\'s data sheet online (metric converted to ft-in, rounded up), check against the unit';
 const sLibOf=()=>cur&&cur.v&&CRLIB.find(x=>x.id===cur.v.sLib)||null;
-/* Liebherr telescopic sections on the Suncor SWP: one small pick-list per section (Tele 1 .. Tele n, in %). The picks are written into
-   "Configuration of Telescopic Boom Sections" the way Liebherr writes it, Tele 1 first: 92/46/0/0/0 %. The box can still be typed in. */
+/* Liebherr telescopic sections on the Suncor SWP: a row of numbered buttons, one per section (Tele 1 first). Tapping a section steps its % through the
+   pinning positions and back to 0. The row is written into "Configuration of Telescopic Boom Sections" the way Liebherr writes it: 92/46/0/0/0 %.
+   The box can still be typed in; a set-up typed in that form shows on the buttons. */
 const teleN=L=>{const w=String(cur.v.teleN||'');return (L.tele.find(x=>String(x[0])===w)||L.tele[0])[0]};
-const teleVals=(L,N)=>{const a=String(cur.v.teleConfig||'').replace(/%/g,'').trim().split(/\s*\/\s*/);return a.length===N&&a.every(x=>/^\d{1,3}$/.test(x)&&L.telePct.includes(+x))?a.map(Number):null};
-function telePick(L){const N=teleN(L),a=teleVals(L,N)||Array(N).fill(0);
-  return `<div class="lab">Telescopic sections – pick the % for each one</div>`
+const teleVals=(L,N,t)=>{const a=String((t===undefined?cur.v.teleConfig:t)||'').replace(/%/g,'').trim().split(/\s*\/\s*/);return a.length===N&&a.every(x=>/^\d{1,3}$/.test(x)&&L.telePct.includes(+x))?a.map(Number):null};
+function telePick(L){const N=teleN(L);
+  return `<div class="lab">Telescopic sections – tap a section to step its %</div>`
     +(L.tele.length>1?`<div class="seg" style="margin-bottom:6px">${L.tele.map(x=>`<button type="button" data-teln="${x[0]}" class="${x[0]===N?'on':''}">${x[0]} sections · ${esc(x[1])}</button>`).join('')}</div>`:'')
-    +`<div style="display:grid;grid-template-columns:repeat(${N<=4?N:Math.ceil(N/2)},1fr);gap:6px;margin-bottom:8px">${a.map((x,i)=>`<label style="display:block;min-width:0"><span style="display:block;font-size:12px;color:var(--mut);text-align:center">Tele ${i+1}</span><select data-tele="${i}" aria-label="Tele ${i+1} percent">${L.telePct.map(p=>`<option${p===x?' selected':''}>${p}</option>`).join('')}</select></label>`).join('')}</div>`}
-function teleSet(){const L=sLibOf();if(!L||!L.tele)return;const s=[...document.querySelectorAll('[data-tele]')].map(e=>e.value).join('/')+' %';cur.v.teleConfig=s;const e=document.querySelector('[data-k="teleConfig"]');if(e)e.value=s;touch()}
+    +`<div class="tele" style="grid-template-columns:repeat(${N},1fr)">${Array.from({length:N},(_,i)=>`<button type="button" data-tele="${i}" data-v="0"><b>0</b><small>${i+1}</small></button>`).join('')}</div>`}
+function teleDraw(ev){const L=sLibOf(),bs=[...document.querySelectorAll('[data-tele]')];if(!L||!L.tele||!bs.length)return;
+  const a=teleVals(L,bs.length,ev&&ev.target?ev.target.value:undefined)||Array(bs.length).fill(0);
+  bs.forEach((b,i)=>{const x=a[i];b.dataset.v=x;b.firstChild.textContent=x;b.classList.toggle('on',x>0);b.style.background=x>0?'linear-gradient(to right,#c7d5f7 '+x+'%,#fff '+x+'%)':'';b.setAttribute('aria-label','Tele '+(i+1)+', '+x+' percent. Tap to change')})}
+function teleStep(i){const L=sLibOf(),bs=[...document.querySelectorAll('[data-tele]')];if(!L||!L.tele||!bs.length)return;
+  const p=L.telePct,a=bs.map(b=>+b.dataset.v||0);a[i]=p[(p.indexOf(a[i])+1)%p.length];
+  const s=a.join('/')+' %';cur.v.teleConfig=s;const e=document.querySelector('[data-k="teleConfig"]');if(e)e.value=s;touch();teleDraw()}
 function teleBoom(n){const L=sLibOf();if(!L||!L.tele)return;const old=teleVals(L,teleN(L));cur.v.teleN=String(n);const N=teleN(L);if(old){const a=old.slice(0,N);while(a.length<N)a.push(0);cur.v.teleConfig=a.join('/')+' %'}touch();render(true)}
 function synPick(k){try{
   if(!CRLIB.length||!cur||!isSyn(cur))return '';
@@ -14863,7 +14876,7 @@ function synSign(){const v=cur.v,X=XF[cur.t];return X.R.map(r=>{let b='';
   <button class="btn sec wide" id="qrBtn">▦ QR code – let another device get a PDF copy</button>`}
 function synV(t){const X=XF[cur.t];if(t==='haz')return V.haz();if(t==='ref')return V.ref();if(t===X.sign)return synSign();const S=X.S[t];if(!S)return '';
   return (cur.t==='mov'&&t===X.tabs[0][0]?linkCard():'')+`<p class="note">${esc(S.sub)}</p>`+S.groups.map(g=>`<div class="card"><h2>${esc(g.h)}</h2>${g.note?`<p class="note" style="margin-top:0">${esc(g.note)}</p>`:''}${g.fields.map(f=>synF(f,g.yna)).join('')}</div>`).join('')}
-function synBind(m){if(tab==='slift')synRefresh();m.querySelectorAll('[data-tele]').forEach(e=>e.onchange=teleSet);m.querySelectorAll('[data-teln]').forEach(b=>b.onclick=()=>teleBoom(b.dataset.teln))}
+function synBind(m){if(tab==='slift')synRefresh();m.querySelectorAll('[data-tele]').forEach(b=>b.onclick=()=>teleStep(+b.dataset.tele));const tc=m.querySelector('[data-k="teleConfig"]');if(tc)tc.addEventListener('input',teleDraw);teleDraw();m.querySelectorAll('[data-teln]').forEach(b=>b.onclick=()=>teleBoom(b.dataset.teln))}
 
 /* ---------- Barnhart On Site Crane Movement FLRA, HSE004D (05/20) Rev.3 ---------- */
 const MOVT=[['vjob','Job'],['vchk','Checklist'],['haz','Hazards'],['ref','Reference'],['vsign','Sign-off']];
