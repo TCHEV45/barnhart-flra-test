@@ -217,6 +217,11 @@ html.dark .ms-btns .btn.bad{color:#0e0e10}
 @media (max-height:480px){.mv-dock{display:flex;align-items:center;padding:6px 0 calc(6px + env(safe-area-inset-bottom))}.mv-chips{flex:1;min-width:0;padding-bottom:0}.mv-find{flex:none;width:48px;margin:0 max(8px,env(safe-area-inset-right)) 0 0;padding:0;justify-content:center}.mv-find span{display:none}}
 @media (min-width:700px){#msh{align-items:center}.ms-sheet{border-bottom:2px solid var(--line);border-radius:14px;padding-bottom:12px}}
 @media (prefers-reduced-motion:reduce){#mvP.ping svg{animation:none}}
+.a2h ol{margin:2px 4px 12px;padding-left:24px;font-size:16px;line-height:1.45}
+.a2h li{margin:0 0 8px}
+.a2h li svg{vertical-align:-4px}
+.a2h .a2h-n{font-size:14px;color:var(--mut)}
+.a2h .btn.wide{min-height:52px;margin:2px 0 8px;font-family:inherit}
 .qt{font-size:15px;margin-bottom:6px}
 .card.qb,.card:has(.qsep){border:2px solid #000}
 .qsep{border-top:2px solid #000}
@@ -13105,8 +13110,9 @@ function findAlignmentPattern(matrix, alignmentPatternQuads, topRight, topLeft, 
 /******/ ])["default"];
 });</script>
 <script>
-const TESTAPP=true;const BUILD='3.89';
+const TESTAPP=true;const BUILD='3.90';
 const NOTES=[
+['3.90',['Share this app: a phone or tablet that scans the QR code now gets “Add this app to your home screen” as soon as the app opens – one button where the browser allows it (Chrome, Edge, Samsung Internet), the three taps to make on an iPhone or iPad. A phone will not let a web page add itself without its owner saying yes, so this is as close to automatic as it gets','“Add to home screen” is also in the ☰ menu under Display, until the app is on the home screen'],1],
 ['3.89',['Site maps: the hard-to-read entries have been taken off the place lists. Syncrude Site Map now lists 243 places and Christina Lake SAGD 283'],1],
 ['3.88',['Site maps rebuilt. One screen lists every site with its maps and a small preview of each – tap a map to open it. “⋯” beside a site or a map holds add, rename, delete and remove, and a delete can be undone for a few seconds','Map viewer rebuilt: the whole map shows first. Pinch, double-tap or use + and − to zoom; on a laptop, drag with the mouse. A place you pick gets a corner frame that does not cover its label, and a card under the map names it','Find a place: type a name, number or tag and the closest matches come first. The buttons under the map highlight a whole group at once – tanks, roads, pipe racks and so on','Syncrude Site Map: the red dots with letters are now the Emergency meeting points. They show on the map as red lettered points and can be switched off. The picture has darker print and cleaner colours'],1],
 ['3.87',['Site maps: Syncrude Base Plant added. The Syncrude Site Map (last revised February 14, 2009) is built in with a location finder – 247 places: red dots with letters, plants and units, tanks, pipe racks, roads. Open it under Site maps and tap “Find a location”','Main app only: the built-in Cenovus Christina Lake South map has been taken out of the main app. It is still here in the test app'],1],
@@ -14705,7 +14711,7 @@ function render(keep){
     <label class="f" style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" id="caC" checked style="width:22px;height:22px"> <span style="font-size:15px;color:var(--ink);margin:0">My saved crane configurations (${crLoad().length})</span></label>
     <button class="btn sec wide" id="caBtn">▦ Show QR codes to copy these</button>
     <p class="note">The other device scans the codes with “Scan a QR code”. It works with no signal and adds to what is already there. Signatures are included.</p></div>
-    <div class="card" style="text-align:center"><h2>Share this app</h2><canvas id="appqr" width="660" height="660" style="width:230px;height:230px;max-width:100%" role="img" aria-label="QR code with the link to this app"></canvas><div class="note" id="appurl" style="word-break:break-all"></div><p class="note">Scan with a phone or tablet camera to open the app, then add it to the home screen. It arrives blank – none of your FLRAs are shared.</p></div>`;
+    <div class="card" style="text-align:center"><h2>Share this app</h2><canvas id="appqr" width="660" height="660" style="width:230px;height:230px;max-width:100%" role="img" aria-label="QR code with the link to this app"></canvas><div class="note" id="appurl" style="word-break:break-all"></div><p class="note">Scan with a phone or tablet camera. The app opens and shows how to add it to the home screen: one button on most Android phones, a few taps on an iPhone or iPad. It arrives blank – none of your FLRAs are shared.</p></div>`;
     appQR();
     $('#caBtn').onclick=sendAll;
     $('#bkSave').onclick=bkSave;$('#bkLoad').onclick=()=>$('#bkFile').click();$('#bkFile').onchange=bkPick;
@@ -15815,14 +15821,14 @@ function sharedView(m){['#homeBtn','#pdfTop','#tabs','#menuBtn'].forEach(s=>$(s)
 addEventListener('hashchange',checkShare);
 
 document.addEventListener('click',e=>{const t=e.target;if(t.closest&&t.closest('#buildNo'))showNotes();else if(t.closest&&t.closest('#bnX,#bnX2'))$('#bnm').classList.add('hide');else if(t.closest&&t.closest('#bnUp')){$('#bnm').classList.add('hide');checkUpdate()}});
-function appQR(){const c=$('#appqr');if(!c)return;const u=location.origin+location.pathname.replace(/index\.html$/,'');$('#appurl').textContent=u.replace(/^https?:\/\//,'');try{const q=qrMake(u),n=q.getModuleCount(),x=c.getContext('2d'),m=3,z=Math.floor(c.width/(n+2*m)),o=Math.floor((c.width-z*n)/2);x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.fillStyle='#000';for(let r=0;r<n;r++)for(let k=0;k<n;k++)if(q.isDark(r,k))x.fillRect(o+k*z,o+r*z,z,z)}catch(e){c.style.display='none'}}
+function appQR(){const c=$('#appqr');if(!c)return;const u=location.origin+location.pathname.replace(/index\.html$/,'');$('#appurl').textContent=u.replace(/^https?:\/\//,'');try{const q=qrMake(u+'#add'),n=q.getModuleCount(),x=c.getContext('2d'),m=3,z=Math.floor(c.width/(n+2*m)),o=Math.floor((c.width-z*n)/2);x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.fillStyle='#000';for(let r=0;r<n;r++)for(let k=0;k<n;k++)if(q.isDark(r,k))x.fillRect(o+k*z,o+r*z,z,z)}catch(e){c.style.display='none'}}
 
 /* ---------- menu (top left) ---------- */
 function secList(){return [['flra','FLRAs',list.filter(x=>recKind(x)==='flra').length],['calc','Lift calcs only',list.filter(isCalc).length]].concat(Object.keys(XF).filter(k=>XF[k].on).map(k=>[k,XF[k].tab,list.filter(x=>x.t===k).length]))}
 function goSec(k){homeTab=k;view='home';$('#menu').classList.add('hide');render();scrollTo(0,0)}
 function openMenu(){const row=(k,l,n,on)=>`<button type="button" data-h="${k}" style="display:flex;width:100%;gap:8px;align-items:center;border:0;border-left:5px solid ${on?'var(--acc)':'transparent'};background:${on?'var(--bg)':'var(--card)'};padding:15px 16px;font:inherit;font-size:17px;font-weight:${on?700:500};color:var(--ink);text-align:left"><span style="flex:1">${l}</span><span style="color:var(--mut);font-size:14px">${n}</span></button>`;
-  $('#menuBox').innerHTML=`<div style="padding:4px 16px 10px;font-weight:700;color:var(--acc)">${esc(QTITLE)}</div><div class="lab" style="padding:8px 16px 2px">Forms</div>${secList().map(a=>row(a[0],esc(a[1]),a[2],homeTab===a[0])).join('')}<div class="lab" style="padding:14px 16px 2px;border-top:2px solid var(--line);margin-top:8px">Site</div>${row('maps','Site maps','',homeTab==='maps')}<div class="lab" style="padding:14px 16px 2px;border-top:2px solid var(--line);margin-top:8px">Display</div><button type="button" id="darkBtn" style="display:flex;width:100%;gap:8px;align-items:center;border:0;border-left:5px solid transparent;background:var(--card);padding:15px 16px;font:inherit;font-size:17px;font-weight:500;color:var(--ink);text-align:left"><span style="flex:1">Dark mode</span><span style="color:var(--mut);font-size:14px">${darkOn()?'On':'Off'}</span></button>`;
-  $('#menuBox').querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>goSec(b.dataset.h));$('#darkBtn').onclick=()=>{darkSet(!darkOn());openMenu()};$('#menu').classList.remove('hide')}
+  $('#menuBox').innerHTML=`<div style="padding:4px 16px 10px;font-weight:700;color:var(--acc)">${esc(QTITLE)}</div><div class="lab" style="padding:8px 16px 2px">Forms</div>${secList().map(a=>row(a[0],esc(a[1]),a[2],homeTab===a[0])).join('')}<div class="lab" style="padding:14px 16px 2px;border-top:2px solid var(--line);margin-top:8px">Site</div>${row('maps','Site maps','',homeTab==='maps')}<div class="lab" style="padding:14px 16px 2px;border-top:2px solid var(--line);margin-top:8px">Display</div><button type="button" id="darkBtn" style="display:flex;width:100%;gap:8px;align-items:center;border:0;border-left:5px solid transparent;background:var(--card);padding:15px 16px;font:inherit;font-size:17px;font-weight:500;color:var(--ink);text-align:left"><span style="flex:1">Dark mode</span><span style="color:var(--mut);font-size:14px">${darkOn()?'On':'Off'}</span></button>${a2hIn()?'':`<button type="button" id="a2hBtn" style="display:flex;width:100%;gap:8px;align-items:center;border:0;border-left:5px solid transparent;background:var(--card);padding:15px 16px;font:inherit;font-size:17px;font-weight:500;color:var(--ink);text-align:left"><span style="flex:1">Add to home screen</span></button>`}`;
+  $('#menuBox').querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>goSec(b.dataset.h));$('#darkBtn').onclick=()=>{darkSet(!darkOn());openMenu()};if($('#a2hBtn'))$('#a2hBtn').onclick=()=>{$('#menu').classList.add('hide');a2hOpen()};$('#menu').classList.remove('hide')}
 $('#menuBtn').onclick=openMenu;$('#menu').onclick=e=>{if(e.target.id==='menu')$('#menu').classList.add('hide')};
 /* ---------- site maps: pictures kept on this device ---------- */
 const SITEK='flra.sites.v1',SITEB='flra.sites.b',SITE0=['Cenovus Christina Lake South','Syncrude Base Plant'];let mapSite=null,mapDbP=null,mapUrl=null,mapZ=1,mapFitZ=1;
@@ -16002,6 +16008,33 @@ addEventListener('resize',()=>{if(!mapCur||$('#mapv').classList.contains('hide')
  S.addEventListener('pointermove',e=>{if(!drag||e.pointerId!==drag.id)return;S.scrollLeft=drag.l-(e.clientX-drag.x);S.scrollTop=drag.t-(e.clientY-drag.y)});
  const up=e=>{if(!drag||e.pointerId!==drag.id)return;drag=null;S.classList.remove('drag');try{S.releasePointerCapture(e.pointerId)}catch(x){}};S.addEventListener('pointerup',up);S.addEventListener('pointercancel',up);
  S.addEventListener('dblclick',e=>{if(e.target.closest('.mv-mk'))return;e.preventDefault();twice(e.clientX,e.clientY)})}
+/* ---------- add to home screen ----------
+   A web page is not allowed to put itself on a home screen: the phone or tablet always asks its owner. So the closest thing is done.
+   The Share this app QR code ends in #add, and a device that opens the app that way is shown how to add it straight away:
+   one button where the browser can do it (Chrome, Edge, Samsung Internet), the taps to make on an iPhone or iPad. */
+let a2hEvt=null,a2hUp=false,a2hFail=false;
+const a2hIn=()=>{try{return navigator.standalone===true||['standalone','fullscreen','minimal-ui'].some(m=>matchMedia('(display-mode: '+m+')').matches)}catch(e){return false}};
+const a2hIOS=()=>/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const a2hApi=()=>typeof Navigator!=='undefined'&&typeof Navigator.prototype.install==='function';
+addEventListener('beforeinstallprompt',e=>{a2hEvt=e;if(a2hUp)a2hDraw()});
+addEventListener('appinstalled',()=>{a2hEvt=null;if(a2hUp)a2hDraw(1)});
+function a2hDraw(done){a2hUp=true;const ios=a2hIOS(),can=!ios&&(!!a2hEvt||a2hApi()),ic=d=>`<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${d}</svg>`;
+  const share=ic('<path d="M12 15V3M8 7l4-4 4 4M6 11v9h12v-9"/>'),dots=ic('<g fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="12" cy="19" r="1.9"/></g>');
+  let body;
+  if(done)body='<p>Close this page and open the app from its new icon. Use the icon from now on.</p>';
+  else if(ios)body=`<ol><li>Tap Share ${share}. On an iPhone it can be inside the <b>•••</b> button.</li><li>Tap <b>Add to Home Screen</b>.</li><li>Tap <b>Add</b>.</li></ol><p class="a2h-n">Then open the app from its new icon and use the icon from now on. Anything filled in on this page stays behind in the browser. If Add to Home Screen is not in the list, open this page in Safari first.</p>`;
+  else body=(can?'<button type="button" class="btn wide" id="a2hGo">Add to home screen</button><p class="a2h-n">Your device asks you to confirm. Then open the app from its new icon.</p>':'')
+    +(can&&!a2hFail?'':(can?'<p>If the button does nothing, do it from the browser menu:</p>':'')+(/Android/i.test(navigator.userAgent)?`<ol><li>Open the browser menu. In Chrome it is ${dots} at the top right.</li><li>Tap <b>Add to Home screen</b>. It may say <b>Install app</b>.</li><li>Tap <b>Install</b> or <b>Add</b>.</li></ol>`:'<p>Open the browser menu and choose <b>Install</b> or <b>Add to Home screen</b>. In Chrome or Edge on a computer there is also an install button at the right end of the address bar.</p>'));
+  const s=mapSheet(`<div class="a2h"><h3>${done?'Added to the home screen':'Add this app to your home screen'}</h3>${done?'':'<p>It then opens full screen like any other app and works with no signal.</p>'}${body}<button type="button" class="ms-act quiet" data-x>${done?'Close':'Not now'}</button></div>`);mapShX=a2hShut;
+  s.onclick=e=>{const b=e.target.closest('button');if(e.target===s||(b&&b.hasAttribute('data-x')))return a2hShut();if(b&&b.id==='a2hGo')a2hGo()}}
+function a2hShut(){a2hUp=false;mapShClose()}
+function a2hOpen(){a2hFail=false;a2hDraw()}
+/* the saved offer from the browser can be used once; the answer comes back as accepted or dismissed */
+async function a2hAsk(){const ev=a2hEvt;a2hEvt=null;try{ev.prompt();const r=await ev.userChoice;if(r&&r.outcome==='accepted'){if(a2hUp)a2hDraw(1);return}}catch(e){}a2hFail=true;if(a2hUp)a2hDraw()}
+/* newer Chrome and Edge install straight from a tap (navigator.install); older ones hand over an offer first (beforeinstallprompt). Either way the device asks its owner. */
+async function a2hGo(){if(a2hApi()){try{await navigator.install();a2hEvt=null;if(a2hUp)a2hDraw(1);return}catch(e){if(a2hEvt&&!(e&&e.name==='AbortError'))return a2hAsk()}a2hFail=true;if(a2hUp)a2hDraw();return}
+  if(a2hEvt)return a2hAsk();a2hFail=true;a2hDraw()}
+function a2hBoot(){let want=false;try{if(/[#&]add(?![\w-])/.test(location.hash)){want=true;history.replaceState(null,'',location.pathname+location.search)}}catch(e){}if(want&&!a2hIn())setTimeout(a2hOpen,400)}
 /* ---------- pull down on the home screen to check for an update ---------- */
 const PTR={y0:null,d:0,busy:0},BN=()=>(TESTAPP?'Test build ':'Build ');
 function ptrSet(h,t){const e=$('#ptr');e.style.height=h+'px';if(t!=null)e.firstChild.textContent=t}
@@ -16212,6 +16245,7 @@ checkShare();
 syBoot();
 gBoot();
 updNote();
+a2hBoot();
 if('serviceWorker' in navigator){addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})})}
 </script>
 </body>
